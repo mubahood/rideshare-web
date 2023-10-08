@@ -28,6 +28,7 @@ Route::group([
     $router->resource('patients', PatientController::class);
     $router->resource('patient-records', PatientRecordController::class);
     $router->resource('treatment-records', TreatmentRecordController::class);
+    $router->resource('route-stages', RouteStageController::class); 
 
     $router->resource('gens', GenController::class);
 });
