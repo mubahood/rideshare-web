@@ -385,7 +385,7 @@ class ApiResurceController extends Controller
             return $this->error('Invalid OTP.');
         }
 
-        $u->password_hash = password_hash($r->password, $otp);
+        $u->password_hash = password_hash($otp, PASSWORD_DEFAULT);
         $u->save();
 
         Config::set('jwt.ttl', 60 * 24 * 30 * 365);

@@ -29,7 +29,7 @@ class Utils extends Model
 
     public static function send_otp($u)
     {
-        $otp = rand(100000, 999999);
+        $otp = rand(1000, 9999);
         $u->otp = $otp;
         $u->save();
         $message = "Your RIDESHARE OTP CODE is {$otp}";
