@@ -79,7 +79,7 @@ class ApiAuthController extends Controller
         try {
             $trip->save();
         } catch (\Throwable $th) {
-            return $this->error('Failed to create trip.');
+            return $this->error($th->getMessage());
         }
         return $this->success(null, $message = "Trip created successfully.", 1);
     }
