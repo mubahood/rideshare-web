@@ -30,7 +30,7 @@ class ApiAuthController extends Controller
             'password' => 'admin',
         ]);
         die($token); */
-        $this->middleware('auth:api', ['except' => ['login', 'register','otp-verify']]);
+        $this->middleware('auth:api', ['except' => ['login', 'register', 'otp-verify']]);
     }
 
 
@@ -42,7 +42,19 @@ class ApiAuthController extends Controller
     public function me()
     {
         $query = auth('api')->user();
-        return $this->success($query, $message = "Profile details", 200);
+        $data = [];
+        $admin = Administrator::find($query->id);
+        $data[] = $admin;
+        return $this->success($data, $message = "Profile details", 200);
+    }
+    public function become_driver()
+    {
+        $u = auth('api')->user();
+        $admin = Administrator::find($u->id);
+        $admin->status = 2;
+        $admin->user_type = 'Pending Driver';
+        $admin->save();
+        return $this->success($admin, $message = "Driver request submitted successfully.", 200);
     }
 
 
@@ -172,6 +184,4 @@ class ApiAuthController extends Controller
             return $this->error('Account created successfully but failed to log you in.');
         }
     }
-
-
 }
