@@ -404,6 +404,35 @@ class ApiResurceController extends Controller
         return $this->success($u, 'Logged in successfully.');
     }
 
+
+
+    public function otp_request(Request $r)
+    {
+        if ($r->phone_number == null) {
+            return $this->error('Phone number is required.');
+        }
+        $phone_number = Utils::prepare_phone_number(trim($r->phone_number));
+        if (!Utils::phone_number_is_valid($phone_number)) {
+            return $this->error('Invalid phone number. ' . $phone_number);
+        }
+
+
+        $u = Administrator::where('phone_number', $phone_number)
+            ->orWhere('username', $phone_number)->first();
+        if ($u == null) {
+            return $this->error('User account not found.');
+        }
+
+        $u->phone_number = $phone_number;
+        $u->save();
+        $resp = Utils::send_otp($u);
+        if (strlen($resp) > 0) {
+            return $this->error($resp);
+        }
+        return $this->success($u, 'Verification code sent to your phone number.');
+    }
+
+
     public function person_create(Request $r)
     {
         $u = $r->user;
