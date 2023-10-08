@@ -32,7 +32,7 @@ class Utils extends Model
         $otp = rand(100000, 999999);
         $u->otp = $otp;
         $u->save();
-        $message = "Dear {$u->name}, Your RIDESHARE OTP CODE is {$otp}";
+        $message = "Your RIDESHARE OTP CODE is {$otp}";
         $phone_number = $u->phone_number;
         $response = Utils::send_message($phone_number, $message);
         return $response;
