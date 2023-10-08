@@ -18,7 +18,7 @@ trait ApiResponser
         return response()->json([
             'code' => 0,
             'message' => $message,
-            'data' => ""
+            'data' => null
         ]);
     }
 }

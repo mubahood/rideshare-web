@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
+use App\Models\Trip;
 use App\Models\User;
 use App\Models\Utils;
 use App\Traits\ApiResponser;
@@ -47,10 +48,46 @@ class ApiAuthController extends Controller
         $data[] = $admin;
         return $this->success($data, $message = "Profile details", 200);
     }
+
+
+    public function trips_create(Request $r)
+    {
+        $query = auth('api')->user();
+        $data = [];
+        $u = Administrator::find($query->id);
+        if ($u == null) {
+            return $this->error('User not found.');
+        }
+        if ($u->user_type != 'Driver') {
+            return $this->error('You are not a driver.');
+        }
+        $trip = new Trip();
+        $trip->driver_id = $u->id;
+        $trip->customer_id = $u->id;
+        $trip->start_stage_id = $r->origin_id;
+        $trip->end_stage_id = $r->destination_id;
+        $trip->scheduled_start_time = $r->departure_date;
+        $trip->scheduled_end_time = $r->arrival_date;
+        $trip->start_time = null;
+        $trip->end_time = null;
+        $trip->status = 'Pending';
+        $trip->vehicel_reg_number = $r->car_reg_number;
+        $trip->slots = $r->available_slots;
+        $trip->details = $r->details;
+        $trip->car_model = $r->car_brand;
+
+        try {
+            $trip->save();
+        } catch (\Throwable $th) {
+            return $this->error('Failed to create trip.');
+        }
+        return $this->success(null, $message = "Trip created successfully.", 1);
+    }
     public function become_driver()
     {
         $u = auth('api')->user();
         $admin = Administrator::find($u->id);
+
         $admin->status = 2;
         $admin->user_type = 'Pending Driver';
         $admin->save();

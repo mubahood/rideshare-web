@@ -31,4 +31,5 @@ Route::group([
     $router->resource('route-stages', RouteStageController::class); 
 
     $router->resource('gens', GenController::class);
+    $router->resource('trips', TripController::class); 
 });

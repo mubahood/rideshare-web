@@ -56,6 +56,7 @@ Route::get('products', [ApiResurceController::class, 'products']);
 Route::get('events', [ApiResurceController::class, 'events']);
 Route::get('news-posts', [ApiResurceController::class, 'news_posts']);
 Route::get('route-stages', [ApiResurceController::class, 'route_stages']);
+Route::POST("trips-create", [ApiAuthController::class, "trips_create"]);
 
 
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
