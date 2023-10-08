@@ -392,7 +392,7 @@ class ApiResurceController extends Controller
         JWTAuth::factory()->setTTL(60 * 24 * 30 * 365);
         $token = auth('api')->attempt([
             'id' => $u->id,
-            'password' => trim($r->password),
+            'password' => $otp,
         ]);
 
         if ($token == null) {
