@@ -18,6 +18,7 @@ use App\Models\Product;
 use App\Models\RouteStage;
 use App\Models\Sacco;
 use App\Models\ServiceProvider;
+use App\Models\Trip;
 use App\Models\Utils;
 use App\Traits\ApiResponser;
 use Carbon\Carbon;
@@ -528,6 +529,10 @@ class ApiResurceController extends Controller
     public function route_stages()
     {
         return $this->success(RouteStage::where([])->orderby('id', 'desc')->get(), 'Success');
+    }
+    public function trips()
+    {
+        return $this->success(Trip::where([])->orderby('id', 'desc')->get(), 'Success');
     }
 
 
