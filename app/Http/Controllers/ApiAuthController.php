@@ -130,11 +130,13 @@ class ApiAuthController extends Controller
         $u = Administrator::where('phone_number', $phone_number)
             ->orWhere('username', $phone_number)->first();
         if ($u != null) {
+            $u->phone_number = $phone_number;
+            $u->save();
             $resp = Utils::send_otp($u);
             if (strlen($resp) > 0) {
                 return $this->error($resp);
             }
-            return $this->success($u, 'Account created successfully. Verification code sent to your phone number.');
+            return $this->success($u, 'Verification code sent to your phone number.');
         }
 
         $user = new Administrator();

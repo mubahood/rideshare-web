@@ -63,7 +63,7 @@ class Utils extends Model
         } catch (\Throwable $th) {
             $my_response = $th->getMessage();
         }
-        return $result;
+        return $my_response;
     }
 
 
