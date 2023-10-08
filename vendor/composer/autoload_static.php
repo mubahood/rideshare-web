@@ -626,6 +626,7 @@ class ComposerStaticInitda89eef54c810448a827ed04bb3da82f
         'App\\Admin\\Controllers\\RouteStageController' => __DIR__ . '/../..' . '/app/Admin/Controllers/RouteStageController.php',
         'App\\Admin\\Controllers\\TaskController' => __DIR__ . '/../..' . '/app/Admin/Controllers/TaskController.php',
         'App\\Admin\\Controllers\\TreatmentRecordController' => __DIR__ . '/../..' . '/app/Admin/Controllers/TreatmentRecordController.php',
+        'App\\Admin\\Controllers\\TripController' => __DIR__ . '/../..' . '/app/Admin/Controllers/TripController.php',
         'App\\Admin\\Controllers\\UserController' => __DIR__ . '/../..' . '/app/Admin/Controllers/UserController.php',
         'App\\Admin\\Extensions\\Column\\FloatBar' => __DIR__ . '/../..' . '/app/Admin/Extensions/Column/FloatBar.php',
         'App\\Admin\\Extensions\\Column\\OpenMap' => __DIR__ . '/../..' . '/app/Admin/Extensions/Column/OpenMap.php',

@@ -3,6 +3,7 @@
     "type": "project",
     "description": "The Laravel Framework.",
     "keywords": ["framework", "laravel"],
+    "platform-check": false,
     "license": "MIT",
     "require": {
         "php": "^7.3|^8.0",

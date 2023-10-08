@@ -22,6 +22,7 @@ return array(
     'App\\Admin\\Controllers\\RouteStageController' => $baseDir . '/app/Admin/Controllers/RouteStageController.php',
     'App\\Admin\\Controllers\\TaskController' => $baseDir . '/app/Admin/Controllers/TaskController.php',
     'App\\Admin\\Controllers\\TreatmentRecordController' => $baseDir . '/app/Admin/Controllers/TreatmentRecordController.php',
+    'App\\Admin\\Controllers\\TripController' => $baseDir . '/app/Admin/Controllers/TripController.php',
     'App\\Admin\\Controllers\\UserController' => $baseDir . '/app/Admin/Controllers/UserController.php',
     'App\\Admin\\Extensions\\Column\\FloatBar' => $baseDir . '/app/Admin/Extensions/Column/FloatBar.php',
     'App\\Admin\\Extensions\\Column\\OpenMap' => $baseDir . '/app/Admin/Extensions/Column/OpenMap.php',
