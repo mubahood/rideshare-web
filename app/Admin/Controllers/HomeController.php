@@ -29,7 +29,8 @@ class HomeController extends Controller
         $admin = Auth::user();
 
         $faker = Faker::create();
-
+        /* 
+z
         Schema::create('trips', function (Blueprint $table) {
             $table->id();
             $table->timestamps();
@@ -49,7 +50,7 @@ class HomeController extends Controller
         });
 
         //example list of dental appointment titles
-/* 
+
         $dental_appointment_titles = [
             "Teeth Cleaning",
             "Cavity Filling",
