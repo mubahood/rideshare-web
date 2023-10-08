@@ -32,7 +32,7 @@ class Utils extends Model
         $otp = rand(100000, 999999);
         $u->otp = $otp;
         $u->save();
-        $message = "Your OTP is {$otp}";
+        $message = "Dear {$u->name}, Your RIDESHARE OTP CODE is {$otp}";
         $phone_number = $u->phone_number;
         $response = Utils::send_message($phone_number, $message);
         return $response;
@@ -65,6 +65,59 @@ class Utils extends Model
         }
         return $result;
     }
+
+
+    public static function validateUgandanPhoneNumber($phoneNumber)
+    {
+        $num = Utils::prepareUgandanPhoneNumber($phoneNumber);
+
+        if ($num == '') {
+            return false;
+        }
+        if (strlen($num) < 13) {
+            return false;
+        }
+        if (strlen($num) > 15) {
+            return false;
+        }
+        return true;
+    }
+
+    public static function prepareUgandanPhoneNumber($phoneNumber)
+    {
+        $phoneNumber = trim($phoneNumber);
+        $phoneNumber = str_replace(' ', '', $phoneNumber);
+        if (substr($phoneNumber, 0, 1) == '0') {
+            $phoneNumber = substr($phoneNumber, 1);
+        } else if (substr($phoneNumber, 0, 3) == '256') {
+            $phoneNumber = substr($phoneNumber, 3);
+        } else if (substr($phoneNumber, 0, 4) == '+256') {
+            $phoneNumber = substr($phoneNumber, 4);
+        }
+        if (strlen($phoneNumber) < 8) {
+            return '';
+        }
+        $phoneNumber = '+256' . $phoneNumber;
+        return $phoneNumber;
+        // Remove any non-numeric characters from the phone number
+        $phoneNumber = preg_replace('/[^0-9]/', '', $phoneNumber);
+
+        // Check if the phone number starts with "07", "256", or "+256"
+        if (preg_match('/^(07|256|\+256)([1-9]\d+)$/', $phoneNumber, $matches)) {
+            // Extract the numeric part
+            $numericPart = $matches[2];
+
+            // Standardize the phone number by adding "7" after "0" and "+256" at the beginning
+            $standardizedNumber = '+256' . '0' . $numericPart;
+
+            return $standardizedNumber;
+        } else {
+            // If the phone number does not match the expected format, return it as is
+            return $phoneNumber;
+        }
+    }
+
+
 
     public static function prepare_calendar_events($u)
     {
