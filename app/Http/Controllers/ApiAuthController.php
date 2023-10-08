@@ -173,47 +173,5 @@ class ApiAuthController extends Controller
         }
     }
 
-    public function otp_verify(Request $r)
-    {
-        if ($r->phone_number == null) {
-            return $this->error('Phone number is required.');
-        }
-        $phone_number = Utils::prepare_phone_number(trim($r->phone_number));
-        if (!Utils::phone_number_is_valid($phone_number)) {
-            return $this->error('Invalid phone number. ' . $phone_number);
-        }
 
-        if ($r->otp == null) {
-            return $this->error('OTP is required.');
-        }
-
-        $u = Administrator::where('phone_number', $phone_number)
-            ->orWhere('username', $phone_number)->first();
-        if ($u == null) {
-            return $this->error('User account not found.');
-        }
-
-        $otp = ((int)($r->otp));
-        if (((int)($u->otp)) != ((int)($r->otp))) {
-            return $this->error('Invalid OTP.');
-        }
-
-        $u->password_hash = password_hash($r->password, $otp);
-        $u->save();
-
-        Config::set('jwt.ttl', 60 * 24 * 30 * 365);
-        JWTAuth::factory()->setTTL(60 * 24 * 30 * 365);
-        $token = auth('api')->attempt([
-            'id' => $u->id,
-            'password' => trim($r->password),
-        ]);
-
-        if ($token == null) {
-            return $this->error('Wrong credentials.');
-        }
-        $u->token = $token;
-        $u->remember_token = $token;
-
-        return $this->success($u, 'Logged in successfully.');
-    }
 }
