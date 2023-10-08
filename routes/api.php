@@ -40,6 +40,7 @@ Route::get("crops", [ApiResurceController::class, "crops"]);
 
 Route::POST("users/login", [ApiAuthController::class, "login"]);
 Route::POST("users/register", [ApiAuthController::class, "register"]);
+Route::POST("otp-verify", [ApiAuthController::class, "otp_verify"]);
 Route::get("users/me", [ApiAuthController::class, "me"]);
 Route::POST("people", [ApiResurceController::class, "person_create"]);
 Route::get("jobs", [ApiResurceController::class, "jobs"]);
