@@ -61,7 +61,8 @@ class ApiAuthController extends Controller
 
         $r->username = trim($r->username);
 
-        $u = User::where('phone_number', $r->username)
+        $u = User::where('phone_number_1', $r->username)
+            ->orWhere('phone_number_2', $r->username)
             ->orWhere('username', $r->username)
             ->orWhere('id', $r->username)
             ->orWhere('email', $r->username)
@@ -114,25 +115,17 @@ class ApiAuthController extends Controller
         if ($r->phone_number == null) {
             return $this->error('Phone number is required.');
         }
-
         $phone_number = Utils::prepare_phone_number(trim($r->phone_number));
-
-
         if (!Utils::phone_number_is_valid($phone_number)) {
             return $this->error('Invalid phone number. ' . $phone_number);
         }
 
-        if ($r->password == null) {
-            return $this->error('Password is required.');
-        }
-
-        if ($r->name == null) {
+        if ($r->first_name == null || $r->last_name == null) {
             return $this->error('Name is required.');
         }
-
-
-
-
+        if ($r->gender == null) {
+            return $this->error('Gender is required.');
+        }
 
         $u = Administrator::where('phone_number', $phone_number)
             ->orWhere('username', $phone_number)->first();
@@ -141,40 +134,14 @@ class ApiAuthController extends Controller
         }
 
         $user = new Administrator();
-
-        $name = $r->name;
-
-        $x = explode(' ', $name);
-
-        if (
-            isset($x[0]) &&
-            isset($x[1])
-        ) {
-            $user->first_name = $x[0];
-            $user->last_name = $x[1];
-        } else {
-            $user->first_name = $name;
-        }
-
-        $user->phone_number = $phone_number;
+        $user->first_name = trim($r->first_name);
+        $user->last_name = trim($r->last_name);
+        $user->sex = trim($r->gender);
         $user->username = $phone_number;
-        $user->reg_number = $phone_number;
-        $user->country = $phone_number;
-        $user->occupation = $phone_number;
-        $user->profile_photo_large = '';
-        $user->location_lat = '';
-        $user->location_long = '';
-        $user->facebook = '';
-        $user->twitter = '';
-        $user->linkedin = '';
-        $user->website = '';
-        $user->other_link = '';
-        $user->cv = '';
-        $user->language = '';
-        $user->about = '';
-        $user->address = '';
-        $user->name = $name;
-        $user->password = password_hash(trim($r->password), PASSWORD_DEFAULT);
+        $user->name = trim($r->first_name) . " " . trim($r->last_name);
+        $user->password = '4321';
+
+        $user->status = 1;
         if (!$user->save()) {
             return $this->error('Failed to create account. Please try again.');
         }

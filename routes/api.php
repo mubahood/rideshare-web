@@ -40,7 +40,7 @@ Route::get("crops", [ApiResurceController::class, "crops"]);
 
 Route::POST("users/login", [ApiAuthController::class, "login"]);
 Route::POST("users/register", [ApiAuthController::class, "register"]);
-Route::get("people", [ApiResurceController::class, "people"]);
+Route::get("users/me", [ApiAuthController::class, "me"]);
 Route::POST("people", [ApiResurceController::class, "person_create"]);
 Route::get("jobs", [ApiResurceController::class, "jobs"]);
 Route::get('api/{model}', [ApiResurceController::class, 'index']);
