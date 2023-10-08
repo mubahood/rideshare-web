@@ -130,7 +130,11 @@ class ApiAuthController extends Controller
         $u = Administrator::where('phone_number', $phone_number)
             ->orWhere('username', $phone_number)->first();
         if ($u != null) {
-            return $this->error('User with same phone number already exists.');
+            $resp = Utils::send_otp($u);
+            if (strlen($resp) > 0) {
+                return $this->error($resp);
+            }
+            return $this->success($u, 'Account created successfully. Verification code sent to your phone number.');
         }
 
         $user = new Administrator();
@@ -150,15 +154,20 @@ class ApiAuthController extends Controller
         if ($new_user == null) {
             return $this->error('Account created successfully but failed to log you in.');
         }
-        Config::set('jwt.ttl', 60 * 24 * 30 * 365);
+        /* Config::set('jwt.ttl', 60 * 24 * 30 * 365);
 
         $token = auth('api')->attempt([
             'username' => $phone_number,
             'password' => trim($r->password),
-        ]);
-
-        $new_user->token = $token;
-        $new_user->remember_token = $token;
-        return $this->success($new_user, 'Account created successfully.');
+        ]); */
+        if ($new_user != null) {
+            $resp = Utils::send_otp($new_user);
+            if (strlen($resp) > 0) {
+                return $this->error($resp);
+            }
+            return $this->success($new_user, 'Account created successfully. Verification code sent to your phone number.');
+        } else {
+            return $this->error('Account created successfully but failed to log you in.');
+        }
     }
 }
