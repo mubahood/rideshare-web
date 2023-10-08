@@ -55,6 +55,7 @@ Route::get('counselling-centres', [ApiResurceController::class, 'counselling_cen
 Route::get('products', [ApiResurceController::class, 'products']);
 Route::get('events', [ApiResurceController::class, 'events']);
 Route::get('news-posts', [ApiResurceController::class, 'news_posts']);
+Route::get('route-stages', [ApiResurceController::class, 'route_stages']);
 
 
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {

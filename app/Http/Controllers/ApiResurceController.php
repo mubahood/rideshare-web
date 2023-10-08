@@ -15,6 +15,7 @@ use App\Models\Job;
 use App\Models\NewsPost;
 use App\Models\Person;
 use App\Models\Product;
+use App\Models\RouteStage;
 use App\Models\Sacco;
 use App\Models\ServiceProvider;
 use App\Models\Utils;
@@ -523,7 +524,10 @@ class ApiResurceController extends Controller
     }
     public function news_posts()
     {
-        return $this->success(NewsPost::where([])->orderby('id', 'desc')->get(), 'Success');
+    }
+    public function route_stages()
+    {
+        return $this->success(RouteStage::where([])->orderby('id', 'desc')->get(), 'Success');
     }
 
 
