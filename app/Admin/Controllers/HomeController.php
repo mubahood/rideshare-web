@@ -16,7 +16,9 @@ use Encore\Admin\Layout\Column;
 use Encore\Admin\Layout\Content;
 use Encore\Admin\Layout\Row;
 use Faker\Factory as Faker;
+use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Schema;
 use SplFileObject;
 
 class HomeController extends Controller
@@ -26,6 +28,24 @@ class HomeController extends Controller
         $admin = Auth::user();
 
         $faker = Faker::create();
+
+        Schema::create('trips', function (Blueprint $table) {
+            $table->id();
+            $table->timestamps();
+            $table->foreignIdFor(Administrator::class, 'driver_id')->nullable();
+            $table->foreignIdFor(Administrator::class, 'customer_id')->nullable();
+            $table->foreignIdFor(RouteStage::class, 'start_stage_id')->nullable();
+            $table->foreignIdFor(RouteStage::class, 'end_stage_id')->nullable();
+            $table->string('scheduled_start_time')->nullable()->comment('Start time of the trip')->nullable();
+            $table->string('scheduled_end_time')->nullable()->comment('End time of the trip')->nullable();
+            $table->string('start_time')->nullable()->comment('Start time of the trip')->nullable();
+            $table->string('end_time')->nullable()->comment('End time of the trip')->nullable();
+            $table->string('status')->nullable()->comment('Status of the trip')->nullable();
+            $table->string('vehicel_reg_number')->nullable()->comment('Status of the trip')->nullable();
+            $table->integer('slots')->nullable()->comment('Number of slots')->nullable();
+            $table->text('details')->nullable()->comment('Details of the trip')->nullable();
+            $table->text('car_model')->nullable()->comment('Details of the trip')->nullable();
+        });
 
         //example list of dental appointment titles
 /* 
