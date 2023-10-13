@@ -123,8 +123,8 @@ class ApiAuthController extends Controller
         if ($u == null) {
             return $this->error('User not found.');
         }
-        if ($r->ic == null) {
-            return $this->error('Trop not dound.');
+        if ($r->id == null) {
+            return $this->error('Trip ID  missing.');
         }
         $booking = TripBooking::find($r->id);
         if ($booking == null) {
