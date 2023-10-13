@@ -62,7 +62,7 @@ class ApiAuthController extends Controller
         if ($r->trip_id == null) {
             return $this->error('Trop not dound.');
         } 
-        if ($u->slot_count == null) {
+        if ($r->slot_count == null) {
             return $this->error('You have not specified the number of slots.');
         } 
         $trip = Trip::find($r->trip_id);
@@ -82,7 +82,7 @@ class ApiAuthController extends Controller
         $booking->payment_status = 'Pending';
         $booking->start_time = null;
         $booking->end_time = null;
-        $booking->slot_count = ((int)($u->slot_count));
+        $booking->slot_count = ((int)($r->slot_count));
         if ($booking->slot_count > $trip->slots) {
             return $this->error('You have exceeded the available slots.');
         }
