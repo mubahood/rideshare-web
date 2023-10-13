@@ -59,19 +59,13 @@ class ApiAuthController extends Controller
         if ($u == null) {
             return $this->error('User not found.');
         }
-        if ($u->trip_id == null) {
-            return $this->error('You are not a driver.');
-        }
-        if ($u->customer_id == null) {
-            return $this->error('You are not a customer.');
-        }
+        if ($r->trip_id == null) {
+            return $this->error('Trop not dound.');
+        } 
         if ($u->slot_count == null) {
             return $this->error('You have not specified the number of slots.');
-        }
-        if ($u->price == null) {
-            return $this->error('You have not specified the price.');
-        }
-        $trip = Trip::find($u->trip_id);
+        } 
+        $trip = Trip::find($r->trip_id);
         if ($trip == null) {
             return $this->error('Trip not found.');
         }
