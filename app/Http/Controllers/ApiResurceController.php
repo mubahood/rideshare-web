@@ -19,6 +19,7 @@ use App\Models\RouteStage;
 use App\Models\Sacco;
 use App\Models\ServiceProvider;
 use App\Models\Trip;
+use App\Models\TripBooking;
 use App\Models\Utils;
 use App\Traits\ApiResponser;
 use Carbon\Carbon;
@@ -541,7 +542,7 @@ class ApiResurceController extends Controller
             return $this->error('User not found.');
         }
         return $this->success(
-            Trip::where('driver_id', $u->id)
+            TripBooking::where('driver_id', $u->id)
                 ->orWhere('customer_id', $u->id)
                 ->orderby('id', 'desc')->get(),
             'Success'
