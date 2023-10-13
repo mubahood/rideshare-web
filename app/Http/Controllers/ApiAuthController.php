@@ -154,7 +154,7 @@ class ApiAuthController extends Controller
                     );
                 }
 
-                $booking->trip->slots = $booking->slots + $booking->slot_count;
+                $booking->trip->slots = $booking->trip->slots + $booking->slot_count;
             }
 
             if ($r->status == 'Completed' && $booking->status != 'Completed') {
