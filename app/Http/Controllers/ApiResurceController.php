@@ -534,6 +534,19 @@ class ApiResurceController extends Controller
     {
         return $this->success(Trip::where([])->orderby('id', 'desc')->get(), 'Success');
     }
+    public function trips_bookings()
+    {
+        $u = auth('api')->user();
+        if ($u == null) {
+            return $this->error('User not found.');
+        }
+        return $this->success(
+            Trip::where('driver_id', $u->id)
+                ->orWhere('customer_id', $u->id)
+                ->orderby('id', 'desc')->get(),
+            'Success'
+        );
+    }
 
 
     public function index(Request $r, $model)

@@ -119,7 +119,7 @@ class Gen extends Model
           }
           $_key = str_replace('_id', '_text', $key);
           $_data .= "String {$_key} = \"\";<br>";
-        }
+        } 
       }
     }
 

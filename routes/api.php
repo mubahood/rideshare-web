@@ -57,6 +57,7 @@ Route::get('events', [ApiResurceController::class, 'events']);
 Route::get('news-posts', [ApiResurceController::class, 'news_posts']);
 Route::get('route-stages', [ApiResurceController::class, 'route_stages']);
 Route::get('trips', [ApiResurceController::class, 'trips']);
+Route::get('trips-bookings', [ApiResurceController::class, 'trips_bookings']);
 Route::POST("trips-create", [ApiAuthController::class, "trips_create"]);
 Route::POST("trips-bookings-create", [ApiAuthController::class, "trips_bookings_create"]);
 
