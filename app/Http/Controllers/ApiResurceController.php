@@ -541,7 +541,7 @@ class ApiResurceController extends Controller
         if ($u == null) {
             return $this->error('User not found.');
         }
-        return $this->success(
+        return $this->success( 
             TripBooking::where('driver_id', $u->id)
                 ->orWhere('customer_id', $u->id)
                 ->orderby('id', 'desc')->get(),
