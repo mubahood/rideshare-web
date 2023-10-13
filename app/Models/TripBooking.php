@@ -23,6 +23,11 @@ class TripBooking extends Model
                 throw new \Exception("You can't create a trip while having another trip in pending status.");
                 return false;
             }
+            return self::prepare($model);
+        });
+        //updating
+        static::updating(function ($model) {
+            return self::prepare($model);
         });
         //created
         static::created(function ($model) {
@@ -35,5 +40,50 @@ class TripBooking extends Model
                 );
             }
         });
+    }
+    //prepare
+    public static function prepare($model)
+    {
+        //set the trip text
+        $trip = Trip::find($model->trip_id);
+        if ($trip) {
+            $model->trip_text = $trip->details;
+        }
+        //set the customer text
+        $customer = Administrator::find($model->customer_id);
+        if ($customer) {
+            $model->customer_text = $customer->name;
+        }
+        //set the start stage text
+        $start_stage = RouteStage::find($model->start_stage_id);
+        if ($start_stage) {
+            $model->start_stage_text = $start_stage->name;
+        }
+        //set the end stage text
+        $end_stage = RouteStage::find($model->end_stage_id);
+        if ($end_stage) {
+            $model->end_stage_text = $end_stage->name;
+        }
+
+        //scheduled_start_time
+        $model->start_time = Utils::format_date($model->start_time);
+
+        return $model;
+    }
+
+    //customer relationship
+    public function customer()
+    {
+        return $this->belongsTo(Administrator::class, 'customer_id');
+    }
+    //driver relationship
+    public function driver()
+    {
+        return $this->belongsTo(Administrator::class, 'driver_id');
+    }
+    //trip relationship
+    public function trip()
+    {
+        return $this->belongsTo(Trip::class, 'trip_id');
     }
 }

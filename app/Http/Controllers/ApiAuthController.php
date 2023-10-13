@@ -61,10 +61,10 @@ class ApiAuthController extends Controller
         }
         if ($r->trip_id == null) {
             return $this->error('Trop not dound.');
-        } 
+        }
         if ($r->slot_count == null) {
             return $this->error('You have not specified the number of slots.');
-        } 
+        }
         $trip = Trip::find($r->trip_id);
         if ($trip == null) {
             return $this->error('Trip not found.');
@@ -113,6 +113,69 @@ class ApiAuthController extends Controller
         }
         return $this->success(null, $message = "Trip booking created successfully.", 1);
     }
+
+
+
+    public function trips_bookings_update(Request $r)
+    {
+        $query = auth('api')->user();
+        $u = Administrator::find($query->id);
+        if ($u == null) {
+            return $this->error('User not found.');
+        }
+        if ($r->ic == null) {
+            return $this->error('Trop not dound.');
+        }
+        $booking = TripBooking::find($r->id);
+        if ($booking == null) {
+            return $this->error('Booking not found.');
+        }
+
+        if ($r->status != null) {
+
+            if ($r->status == 'Reserved' && $booking->status != 'Reserved') {
+                $booking->status = $r->status;
+                Utils::send_message(
+                    $booking->customer->phone_number,
+                    "RIDESAHRE! Your trip booking has been reserved. Open the app to view it."
+                );
+            }
+            if ($r->status == 'Canceled' && $booking->status != 'Canceled') {
+                $booking->status = $r->status;
+                if ($u->id == $booking->customer_id) {
+                    Utils::send_message(
+                        $booking->driver->phone_number,
+                        "RIDESAHRE! Booking has been canceled by the customer. Open the app to view it."
+                    );
+                } else {
+                    Utils::send_message(
+                        $booking->customer->phone_number,
+                        "RIDESAHRE! Your trip booking has been canceled by the driver. Open the app to view it."
+                    );
+                }
+
+                $booking->slots = $booking->slots + $booking->slot_count;
+            }
+
+            if ($r->status == 'Completed' && $booking->status != 'Completed') {
+                $booking->status = $r->status;
+                Utils::send_message(
+                    $booking->customer->phone_number,
+                    "RIDESAHRE! Your trip has been completed. Open the app to view it."
+                );
+            }
+        }
+
+
+        try {
+            $booking->save();
+        } catch (\Throwable $th) {
+            return $this->error($th->getMessage());
+        }
+        return $this->success(null, $message = "Trip booking updated successfully.", 1);
+    }
+
+
     public function trips_create(Request $r)
     {
         $query = auth('api')->user();

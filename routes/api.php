@@ -60,6 +60,7 @@ Route::get('trips', [ApiResurceController::class, 'trips']);
 Route::get('trips-bookings', [ApiResurceController::class, 'trips_bookings']);
 Route::POST("trips-create", [ApiAuthController::class, "trips_create"]);
 Route::POST("trips-bookings-create", [ApiAuthController::class, "trips_bookings_create"]);
+Route::POST("trips-bookings-update", [ApiAuthController::class, "trips_bookings_update"]);
 
 
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
