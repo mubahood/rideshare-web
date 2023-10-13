@@ -689,6 +689,7 @@ class ComposerStaticInitda89eef54c810448a827ed04bb3da82f
         'App\\Models\\Task' => __DIR__ . '/../..' . '/app/Models/Task.php',
         'App\\Models\\TreatmentRecord' => __DIR__ . '/../..' . '/app/Models/TreatmentRecord.php',
         'App\\Models\\Trip' => __DIR__ . '/../..' . '/app/Models/Trip.php',
+        'App\\Models\\TripBooking' => __DIR__ . '/../..' . '/app/Models/TripBooking.php',
         'App\\Models\\User' => __DIR__ . '/../..' . '/app/Models/User.php',
         'App\\Models\\UserHasProgram' => __DIR__ . '/../..' . '/app/Models/UserHasProgram.php',
         'App\\Models\\Utils' => __DIR__ . '/../..' . '/app/Models/Utils.php',

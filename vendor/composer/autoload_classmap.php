@@ -85,6 +85,7 @@ return array(
     'App\\Models\\Task' => $baseDir . '/app/Models/Task.php',
     'App\\Models\\TreatmentRecord' => $baseDir . '/app/Models/TreatmentRecord.php',
     'App\\Models\\Trip' => $baseDir . '/app/Models/Trip.php',
+    'App\\Models\\TripBooking' => $baseDir . '/app/Models/TripBooking.php',
     'App\\Models\\User' => $baseDir . '/app/Models/User.php',
     'App\\Models\\UserHasProgram' => $baseDir . '/app/Models/UserHasProgram.php',
     'App\\Models\\Utils' => $baseDir . '/app/Models/Utils.php',

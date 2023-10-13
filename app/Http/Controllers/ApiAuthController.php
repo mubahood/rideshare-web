@@ -3,7 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
+use App\Models\RouteStage;
 use App\Models\Trip;
+use App\Models\TripBooking;
 use App\Models\User;
 use App\Models\Utils;
 use App\Traits\ApiResponser;
@@ -50,6 +52,73 @@ class ApiAuthController extends Controller
     }
 
 
+    public function trips_bookings_create(Request $r)
+    {
+        $query = auth('api')->user();
+        $u = Administrator::find($query->id);
+        if ($u == null) {
+            return $this->error('User not found.');
+        }
+        if ($u->trip_id == null) {
+            return $this->error('You are not a driver.');
+        }
+        if ($u->customer_id == null) {
+            return $this->error('You are not a customer.');
+        }
+        if ($u->slot_count == null) {
+            return $this->error('You have not specified the number of slots.');
+        }
+        if ($u->price == null) {
+            return $this->error('You have not specified the price.');
+        }
+        $trip = Trip::find($u->trip_id);
+        if ($trip == null) {
+            return $this->error('Trip not found.');
+        }
+        if ($trip->status != 'Pending') {
+            return $this->error('Trip is not in pending status.');
+        }
+        $booking = new TripBooking();
+        $booking->trip_id = $trip->id;
+        $booking->customer_id = $u->id;
+        $booking->driver_id = $trip->driver_id;
+        $booking->start_stage_id = $trip->start_stage_id;
+        $booking->end_stage_id = $trip->end_stage_id;
+        $booking->status = 'Pending';
+        $booking->payment_status = 'Pending';
+        $booking->start_time = null;
+        $booking->end_time = null;
+        $booking->slot_count = ((int)($u->slot_count));
+        if ($booking->slot_count > $trip->slots) {
+            return $this->error('You have exceeded the available slots.');
+        }
+        $booking->price = $trip->price * $booking->slot_count;
+        $booking->customer_note = $r->customer_note;
+
+        $start_stage = RouteStage::find($booking->start_stage_id);
+        $end_stage = RouteStage::find($booking->end_stage_id);
+        if ($start_stage == null) {
+            throw new \Exception("Start stage not found.");
+        }
+        if ($end_stage == null) {
+            throw new \Exception("End stage not found.");
+        }
+        $booking->start_stage_text = $start_stage->name;
+        $booking->end_stage_text = $end_stage->name;
+        $booking->customer_text = $u->name;
+        $booking->driver_text = $trip->details;
+
+
+        try {
+            $booking->save();
+        } catch (\Throwable $th) {
+            return $this->error($th->getMessage());
+        } finally {
+            $trip->slots = $trip->slots - $booking->slot_count;
+            $trip->save();
+        }
+        return $this->success(null, $message = "Trip booking created successfully.", 1);
+    }
     public function trips_create(Request $r)
     {
         $query = auth('api')->user();
