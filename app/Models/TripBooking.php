@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Carbon\Carbon;
 use Encore\Admin\Auth\Database\Administrator;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -66,7 +67,7 @@ class TripBooking extends Model
         }
 
         //scheduled_start_time
-        $model->start_time = Utils::format_date($model->start_time);
+        $model->start_time = Carbon::parse($model->start_time);
 
         return $model;
     }
