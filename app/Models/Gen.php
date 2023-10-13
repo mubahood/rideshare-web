@@ -114,6 +114,9 @@ class Gen extends Model
       } else {
         $_data .= "String {$key} = \"\";<br>";
         if (str_contains($key, '_id')) {
+          if (in_array($key, $done)) {
+            continue;
+          }
           $_key = str_replace('_id', '_text', $key);
           $_data .= "String {$_key} = \"\";<br>";
         }
