@@ -54,4 +54,10 @@ class Trip extends Model
         }
         return "";
     }
+
+    protected $appends = [
+        'start_stage_text',
+        'end_stage_text',
+        'driver_text'
+    ];
 }
