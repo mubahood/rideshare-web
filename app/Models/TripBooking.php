@@ -67,7 +67,11 @@ class TripBooking extends Model
         }
 
         //scheduled_start_time
-        $model->start_time = Carbon::parse($model->start_time);
+        try{
+            $model->start_time = Carbon::parse($model->start_time);
+        }catch(\Exception $e){
+            $model->start_time = $model->start_time;
+        }
 
         return $model;
     }
