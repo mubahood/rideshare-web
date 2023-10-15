@@ -15,7 +15,7 @@ if (!isset($tasks_count)) {
             <div class="col-md-4">
                 @include('widgets.box-6', [
                     'is_dark' => false,
-                    'title' => 'Today\'s Appointments',
+                    'title' => 'Today\'s Rides',
                     'icon' => 'box',
                     'number' => rand(1, 100),
                     'link' => 'javascript:;',
@@ -24,7 +24,7 @@ if (!isset($tasks_count)) {
             <div class="col-md-4">
                 @include('widgets.box-6', [
                     'is_dark' => false,
-                    'title' => 'This Week\'s Appointments',
+                    'title' => 'This Week\'s Rides',
                     'icon' => 'list-task',
                     'number' => rand(50, 300),
                     'link' => 'javascript:;',
@@ -33,7 +33,7 @@ if (!isset($tasks_count)) {
             <div class="col-md-4">
                 @include('widgets.box-6', [
                     'is_dark' => false,
-                    'title' => 'Upcoming Appointments',
+                    'title' => 'Upcoming Rides',
                     'icon' => 'calendar-event-fill',
                     'number' => rand(2, 500),
                     'link' => 'javascript:;',
