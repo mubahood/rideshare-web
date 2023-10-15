@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Carbon\Carbon;
+use Encore\Admin\Auth\Database\Role;
 use Encore\Admin\Facades\Admin;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -596,6 +597,20 @@ class Utils extends Model
     public static function system_boot()
     {
 
+        $u = Admin::user();
+        if($u == null){
+            return;
+        }
+        //check of user has any role
+        if ($u->roles()->count() < 1) {
+            //set default role for user
+            $role = Role::where(['name' => 'employee'])->first();
+            if ($role != null) {
+                $u->roles()->attach($role->id);
+            }
+
+        }
+
 
         //Companies with no financial years
         foreach (Company::where([
@@ -619,7 +634,8 @@ class Utils extends Model
             $company->active_year = $company->id;
             $company->save();
         }
-        $u = Admin::user();
+        
+
     }
 
     public static function start_session()
