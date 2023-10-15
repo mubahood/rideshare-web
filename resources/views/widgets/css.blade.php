@@ -1,6 +1,7 @@
 <?php
 use App\Models\Utils;
 $ent = Utils::ent();
+$ent->color = '#cea100';
 ?><style>
     .sidebar {
         background-color: #FFFFFF;

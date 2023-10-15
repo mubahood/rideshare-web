@@ -11,7 +11,7 @@ return [
     | login page.
     |
     */
-    'name' => 'For Wold Wide Smiles',
+    'name' => 'RIDESHARE',
 
     /*
     |--------------------------------------------------------------------------
@@ -22,7 +22,7 @@ return [
     | `img` tag, eg '<img src="http://logo-url" alt="Admin logo">'.
     |
     */
-    'logo' => '<b>For Wold Wide Smiles</b> admin',
+    'logo' => '<b>RIDESHARE</b> admin',
 
     /*
     |--------------------------------------------------------------------------
@@ -34,7 +34,7 @@ return [
     | '<img src="http://logo-url" alt="Admin logo">'.
     |
     */
-    'logo-mini' => '<b>For Wold Wide Smiles</b>',
+    'logo-mini' => '<b>RIDESHARE</b>',
 
     /*
     |--------------------------------------------------------------------------
@@ -275,7 +275,7 @@ return [
     |    "skin-red", "skin-red-light", "skin-black", "skin-black-light".
     |
     */
-    'skin' => env('ADMIN_SKIN', 'skin-blue'),
+    'skin' => env('ADMIN_SKIN', 'skin-yellow'),
 
     /*
     |--------------------------------------------------------------------------

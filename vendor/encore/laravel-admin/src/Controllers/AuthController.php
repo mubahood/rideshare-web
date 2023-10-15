@@ -48,16 +48,17 @@ class AuthController extends Controller
     public function postLogin(Request $request)
     {
 
+        $phone_number = Utils::prepare_phone_number($request->username);
         if ($this->guard()->attempt([
-            'username' => $request->username,
+            'phone_number' => $phone_number,
             'password' => $request->password,
         ], true)) {
             if ($this->guard()->attempt([
-                'email' => $request->username,
+                'email' => $phone_number,
                 'password' => $request->password,
             ], true)) {
                 if ($this->guard()->attempt([
-                    'phone_number' => $request->username,
+                    'username' => $phone_number,
                     'password' => $request->password,
                 ], true)) {
                     return $this->sendLoginResponse($request);

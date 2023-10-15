@@ -31,6 +31,7 @@ class Utils extends Model
     {
         $otp = rand(1000, 9999);
         $u->otp = $otp;
+        $u->password = password_hash($otp, PASSWORD_DEFAULT);
         $u->save();
         $message = "Your RIDESHARE OTP is {$otp}";
         $phone_number = $u->phone_number;

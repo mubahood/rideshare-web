@@ -4,7 +4,7 @@
 
 <?php
 
-$primt_color = '#0761BB';
+$primt_color = '#F39C12';
 ?><style> 
    
 
