@@ -25,8 +25,16 @@ class Trip extends Model
                 return false;
             }
         });
-    }
 
+
+        static::updated(function ($model) {
+            TripBooking::where([
+                'trip_id' => $model->trip_id
+            ])->update([
+                'status' => $model->status
+            ]);
+        });
+    }
     //getter for start_stage_text
     public function getStartStageTextAttribute()
     {

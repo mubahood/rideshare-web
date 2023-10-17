@@ -176,6 +176,31 @@ class ApiAuthController extends Controller
     }
 
 
+    public function trips_update(Request $r)
+    {
+        $query = auth('api')->user();
+        $u = Administrator::find($query->id);
+        if ($u == null) {
+            return $this->error('User not found.');
+        }
+        if ($r->id == null) {
+            return $this->error('Trip ID  missing.');
+        }
+        $trip = Trip::find($r->id);
+        if ($trip == null) {
+            return $this->error('Trip found.');
+        }
+
+        $trip->status = $r->status;
+        try {
+            $trip->save();
+        } catch (\Throwable $th) {
+            return $this->error($th->getMessage());
+        }
+        return $this->success(null, $message = "Trip booking updated successfully.", 1);
+    }
+
+
     public function trips_create(Request $r)
     {
         $query = auth('api')->user();
