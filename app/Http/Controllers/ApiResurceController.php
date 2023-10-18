@@ -434,6 +434,7 @@ class ApiResurceController extends Controller
             $u->password = password_hash('1234', PASSWORD_DEFAULT);
             $u->otp = '1234';
             $u->save();
+            Utils::send_message($phone_number, 'Testing account detected. Use 1234 as OTP.'); 
             return $this->success($u, 'Testing account detected. Use 1234 as OTP.');
         } else {
             $resp = Utils::send_otp($u);
@@ -553,7 +554,7 @@ class ApiResurceController extends Controller
         if ($u == null) {
             return $this->error('User not found.');
         }
-        return $this->success( 
+        return $this->success(
             TripBooking::where('driver_id', $u->id)
                 ->orWhere('customer_id', $u->id)
                 ->orderby('id', 'desc')->get(),
