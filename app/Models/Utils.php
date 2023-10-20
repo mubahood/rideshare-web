@@ -32,13 +32,13 @@ class Utils extends Model
     public static function upload_images_1($files, $is_single_file = false)
     {
 
+
         ini_set('memory_limit', '-1');
         if ($files == null || empty($files)) {
             return $is_single_file ? "" : [];
         }
         $uploaded_images = array();
         foreach ($files as $file) {
-
             if (
                 isset($file['name']) &&
                 isset($file['type']) &&
@@ -48,7 +48,7 @@ class Utils extends Model
             ) {
                 $ext = pathinfo($file['name'], PATHINFO_EXTENSION);
                 $file_name = time() . "-" . rand(100000, 1000000) . "." . $ext;
-                $destination = Utils::docs_root() . '/storage/images/' . $file_name;
+                $destination = Utils::docs_root() . '/storage/images/' . $file_name; 
                 $res = move_uploaded_file($file['tmp_name'], $destination);
                 if (!$res) {
                     continue;
