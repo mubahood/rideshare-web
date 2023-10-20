@@ -203,9 +203,6 @@ class ApiAuthController extends Controller
 
     public function trips_create(Request $r)
     {
-        die("become-driver");
-        $image = Utils::upload_images_1($_FILES, true);
-        dd($image);
         $query = auth('api')->user();
         $data = [];
         $u = Administrator::find($query->id);
