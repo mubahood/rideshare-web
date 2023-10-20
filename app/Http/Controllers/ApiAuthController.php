@@ -265,7 +265,7 @@ class ApiAuthController extends Controller
         $admin->driving_license_issue_date = Carbon::parse($r->driving_license_issue_date);
         $admin->driving_license_validity = Carbon::parse($r->driving_license_validity);
         $admin->driving_license_issue_authority = $r->driving_license_issue_authority;
-        
+
         $image = Utils::upload_images_1($_FILES, true);
         if ($image != null) {
             if (strlen($image) > 3) {
@@ -273,7 +273,7 @@ class ApiAuthController extends Controller
             }
         }
 
-         
+
         $admin->status = 2;
         $admin->user_type = 'Pending Driver';
         $admin->save();
@@ -380,11 +380,13 @@ class ApiAuthController extends Controller
                 $u->status = 1;
                 $u->password = password_hash('1234', PASSWORD_DEFAULT);
                 $u->otp = '1234';
+                $u->save();
+                return $this->success($u, 'Verification code sent to your phone number.');
             } else {
                 $resp = Utils::send_otp($u);
             }
 
-            $u->save();
+
             if (strlen($resp) > 0) {
                 return $this->error($resp);
             }
