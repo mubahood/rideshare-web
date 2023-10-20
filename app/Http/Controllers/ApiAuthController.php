@@ -267,7 +267,7 @@ class ApiAuthController extends Controller
         $admin->driving_license_issue_authority = $r->driving_license_issue_authority;
     
         $image = Utils::upload_images_1($_FILES, true);
-        return $this->success($image, $message = "IMG DATA SENT.", 200); 
+        return $this->success($image, $message = "IMG DATA SENT. => ".$image, 200); 
         if ($image != null) {
             if (strlen($image) > 3) {
                 $admin->driving_license_photo = $image;
