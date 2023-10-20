@@ -234,11 +234,38 @@ class ApiAuthController extends Controller
         }
         return $this->success(null, $message = "Trip created successfully.", 1);
     }
-    public function become_driver()
+    public function become_driver(Request $r)
     {
         $u = auth('api')->user();
         $admin = Administrator::find($u->id);
+        if ($admin == null) {
+            return $this->error('User not found.');
+        }
+        if ($r->driving_license_number == null) {
+            return $this->error('Driving license number is required.');
+        }
+        if ($r->driving_license_issue_date == null) {
+            return $this->error('Driving license issue date is required.');
+        }
+        if ($r->driving_license_validity == null) {
+            return $this->error('Driving license validity is required.');
+        }
+        if ($r->driving_license_issue_authority == null) {
+            return $this->error('Driving license issue authority is required.');
+        }
+        if ($r->nin == null) {
+            return $this->error('Driving license photo is required.');
+        }
+        $admin->driving_license_number = $r->driving_license_number;
+        $admin->nin = $r->nin;
+        $admin->driving_license_number = $r->driving_license_number;
+        $admin->driving_license_issue_date = Carbon::parse($r->driving_license_issue_date);
+        $admin->driving_license_validity = Carbon::parse($r->driving_license_validity);
+        $admin->driving_license_issue_authority = $r->driving_license_issue_authority;
+        //$admin->driving_license_photo = $r->driving_license_photo;
 
+
+         
         $admin->status = 2;
         $admin->user_type = 'Pending Driver';
         $admin->save();
