@@ -262,8 +262,13 @@ class ApiAuthController extends Controller
         $admin->driving_license_issue_date = Carbon::parse($r->driving_license_issue_date);
         $admin->driving_license_validity = Carbon::parse($r->driving_license_validity);
         $admin->driving_license_issue_authority = $r->driving_license_issue_authority;
-        //$admin->driving_license_photo = $r->driving_license_photo;
-
+        
+        $image = Utils::upload_images_1($_FILES, true);
+        if ($image != null) {
+            if (strlen($image) > 3) {
+                $admin->driving_license_photo = $image;
+            }
+        }
 
          
         $admin->status = 2;
