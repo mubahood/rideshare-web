@@ -381,7 +381,7 @@ class ApiAuthController extends Controller
                 $u->password = password_hash('1234', PASSWORD_DEFAULT);
                 $u->otp = '1234';
                 $u->save();
-                return $this->success($u, 'Verification code sent to your phone number.');
+                return $this->success($u, 'Testing account created successfully. Verification code sent to your phone number.');
             } else {
                 $resp = Utils::send_otp($u);
             }
