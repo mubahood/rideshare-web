@@ -212,6 +212,9 @@ class ApiAuthController extends Controller
         if ($u->user_type != 'Driver') {
             return $this->error('You are not a driver.');
         }
+        if ($r->price == null) {
+            return $this->error('Price is required.');
+        }
         $trip = new Trip();
         $trip->driver_id = $u->id;
         $trip->customer_id = $u->id;
@@ -226,6 +229,7 @@ class ApiAuthController extends Controller
         $trip->slots = $r->available_slots;
         $trip->details = $r->details;
         $trip->car_model = $r->car_brand;
+        $trip->price = $r->price;
 
         try {
             $trip->save();
