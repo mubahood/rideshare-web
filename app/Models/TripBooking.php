@@ -118,8 +118,9 @@ class TripBooking extends Model
         }
         $driver = Administrator::find($this->trip->driver_id);
         if ($driver) {
-            return $driver->phone_number_1;
+            return $driver->phone_number;
         }
+        $this->delete();
         return "-";
     }
 
