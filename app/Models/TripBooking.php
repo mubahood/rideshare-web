@@ -67,14 +67,69 @@ class TripBooking extends Model
         }
 
         //scheduled_start_time
-        try{
+        try {
             $model->start_time = Carbon::parse($model->start_time);
-        }catch(\Exception $e){
+        } catch (\Exception $e) {
             $model->start_time = $model->start_time;
         }
 
         return $model;
     }
+
+    //getter for trip_text
+    public function getTripTextAttribute()
+    {
+        $trip = Trip::find($this->trip_id);
+        if ($trip) {
+            return json_encode($trip);
+        }
+        return "";
+    }
+
+    //getter for customer_text
+    public function getCustomerTextAttribute()
+    {
+        $customer = Administrator::find($this->customer_id);
+        if ($customer) {
+            return $customer->first_name . " " . $customer->last_name;
+        }
+        return "";
+    }
+    //getter for driver_text
+    public function getDriverTextAttribute()
+    {
+        if ($this->trip == null) {
+            $this->delete();
+            return "";
+        }
+        $driver = Administrator::find($this->trip->driver_id);
+        if ($driver) {
+            return $driver->first_name . " " . $driver->last_name;
+        }
+        return "-";
+    }
+
+    //getter for driver_contact
+    public function getDriverContactAttribute()
+    {
+        if ($this->trip == null) {
+            $this->delete();
+            return "";
+        }
+        $driver = Administrator::find($this->trip->driver_id);
+        if ($driver) {
+            return $driver->phone_number_1;
+        }
+        return "-";
+    }
+
+    //appends 
+    protected $appends = [
+        'trip_text',
+        'customer_text',
+        'driver_text',
+        'driver_contact'
+    ];
 
     //customer relationship
     public function customer()
