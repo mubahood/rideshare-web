@@ -86,7 +86,6 @@ class Trip extends Model
         'start_stage_text',
         'end_stage_text',
         'driver_text',
-        'price',
         'driver_contact',
         'other_info',
     ];
