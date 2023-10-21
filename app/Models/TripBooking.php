@@ -123,11 +123,21 @@ class TripBooking extends Model
         $this->delete();
         return "-";
     }
+    //getter for customer_contact
+    public function getCustomerContactAttribute()
+    {
+        $customer = Administrator::find($this->customer_id);
+        if ($customer) {
+            return $customer->phone_number;
+        }
+        return "-";
+    }
 
     //appends 
     protected $appends = [
         'trip_text',
         'customer_text',
+        'customer_contact',
         'driver_text',
         'driver_contact'
     ];
