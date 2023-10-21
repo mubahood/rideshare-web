@@ -108,8 +108,8 @@ class ApiAuthController extends Controller
         } catch (\Throwable $th) {
             return $this->error($th->getMessage());
         } finally {
-            $trip->slots = $trip->slots - $booking->slot_count;
-            $trip->save();
+            //$trip->slots = $trip->slots - $booking->slot_count;
+            //$trip->save();
         }
         return $this->success(null, $message = "Trip booking created successfully.", 1);
     }
