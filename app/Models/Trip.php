@@ -63,9 +63,45 @@ class Trip extends Model
         return "";
     }
 
+    //getter for price
+    public function getPriceAttribute()
+    {
+        $price = TripBooking::where([
+            'trip_id' => $this->trip_id
+        ])->sum('price');
+        return $price;
+    }
+    //getter for driver_contact
+    public function getDriverContactAttribute()
+    {
+        $driver = Administrator::find($this->driver_id);
+        if ($driver) {
+            return $driver->phone_number_1;
+        }
+        return "-";
+    }
+    //get for other_info
+    public function getOtherInfoAttribute()
+    {
+        $driver = Administrator::find($this->driver_id);
+        if ($driver) {
+            return json_encode($driver);
+        }
+        return "-";
+    }
+
     protected $appends = [
         'start_stage_text',
         'end_stage_text',
-        'driver_text'
+        'driver_text',
+        'price',
+        'driver_contact',
+        'other_info',
     ];
+    /* 
+      String price = "";
+  String driver_contact = "";
+  String other_info = "";
+    
+    */
 }
