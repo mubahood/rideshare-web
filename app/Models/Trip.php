@@ -63,14 +63,6 @@ class Trip extends Model
         return "";
     }
 
-    //getter for price
-    public function getPriceAttribute()
-    {
-        $price = TripBooking::where([
-            'trip_id' => $this->trip_id
-        ])->sum('price');
-        return $price;
-    }
     //getter for driver_contact
     public function getDriverContactAttribute()
     {
