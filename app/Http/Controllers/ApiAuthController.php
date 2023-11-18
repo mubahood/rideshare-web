@@ -44,7 +44,7 @@ class ApiAuthController extends Controller
      */
     public function users()
     {
-        return $this->success(Administrator::all(), $message = "Success", 200);
+        return $this->success(User::all(), $message = "Success", 200);
     }
     public function me()
     {
