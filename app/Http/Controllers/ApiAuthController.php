@@ -42,6 +42,10 @@ class ApiAuthController extends Controller
      *
      * @return \Illuminate\Http\JsonResponse
      */
+    public function users()
+    {
+        return $this->success(Administrator::all(), $message = "Success", 200);
+    }
     public function me()
     {
         $query = auth('api')->user();
