@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\ApiAuthController;
+use App\Http\Controllers\ApiChatController;
 use App\Http\Controllers\ApiResurceController;
 use App\Http\Middleware\EnsureTokenIsValid;
 use Illuminate\Http\Request;
@@ -16,6 +17,12 @@ use Illuminate\Support\Facades\Route;
 | is assigned the "api" middleware group. Enjoy building your API!
 |
 */
+
+Route::get('chat-heads', [ApiChatController::class, 'chat_heads']); //==>1 
+Route::get('chat-messages', [ApiChatController::class, 'chat_messages']); //==>2 
+Route::post('chat-send', [ApiChatController::class, 'chat_send']); //==>2 
+Route::post('chat-heads-create', [ApiChatController::class, 'chat_heads_create']); //==>2 
+
 
 Route::get("saccos", [ApiResurceController::class, "saccos"]);
 Route::post("sacco-join-request", [ApiResurceController::class, "sacco_join_request"]);
