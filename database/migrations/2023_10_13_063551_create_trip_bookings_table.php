@@ -16,6 +16,7 @@ class CreateTripBookingsTable extends Migration
      */
     public function up()
     {
+        return;
         Schema::create('trip_bookings', function (Blueprint $table) {
             $table->id();
             $table->timestamps();

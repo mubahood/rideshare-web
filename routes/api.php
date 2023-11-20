@@ -4,6 +4,7 @@ use App\Http\Controllers\ApiAuthController;
 use App\Http\Controllers\ApiChatController;
 use App\Http\Controllers\ApiResurceController;
 use App\Http\Middleware\EnsureTokenIsValid;
+use Encore\Admin\Auth\Database\Administrator;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -49,6 +50,7 @@ Route::POST("users/login", [ApiAuthController::class, "login"]);
 Route::POST("users/register", [ApiAuthController::class, "register"]);
 Route::POST("otp-verify", [ApiResurceController::class, "otp_verify"]);
 Route::POST("otp-request", [ApiResurceController::class, "otp_request"]);
+Route::get("otp-request", [ApiResurceController::class, "otp_request"]);
 Route::get("users/me", [ApiAuthController::class, "me"]);
 Route::get("users", [ApiAuthController::class, "users"]);
 Route::POST("become-driver", [ApiAuthController::class, "become_driver"]);
@@ -73,6 +75,68 @@ Route::POST("trips-update", [ApiAuthController::class, "trips_update"]);
 
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
+});
+
+Route::get('/user', function (Request $request) {
+    return 'Testing';
+});
+Route::get('/users', function (Request $request) {
+    $conditions = [];
+    if ($request->has('q')) {
+        $conditions[] = ['name', 'like', '%' . $request->q . '%'];
+    }
+    $districts = Administrator::where($conditions)->get();
+    $data = [];
+    foreach ($districts as $district) {
+        $data[] = [
+            'id' => $district->id,
+            'text' => $district->name." - ".$district->phone_number
+        ];
+    }
+    return response()->json([
+        'data' => $data
+    ]);
+});
+
+Route::get('/select-distcists', function (Request $request) {
+    $conditions = [];
+    if ($request->has('q')) {
+        $conditions[] = ['name', 'like', '%' . $request->q . '%'];
+    }
+    $districts = \App\Models\DistrictModel::where($conditions)->get();
+    $data = [];
+    foreach ($districts as $district) {
+        $data[] = [
+            'id' => $district->id,
+            'text' => $district->name
+        ];
+    }
+    return response()->json([
+        'data' => $data
+    ]);
+});
+
+
+Route::get('/select-subcounties', function (Request $request) {
+    $conditions = [];
+    if ($request->has('q')) {
+        if ($request->has('by_id')) {
+            $conditions['district_id'] = ((int)($request->q));
+        } else {
+            $conditions[] = ['name', 'like', '%' . $request->q . '%'];
+        }
+    }
+    $districts = \App\Models\SubcountyModel::where($conditions)->get();
+    $data = [];
+    foreach ($districts as $district) {
+        $data[] = [
+            'id' => $district->id,
+            'text' => $district->name_text
+        ];
+    }
+    return response()->json([
+        'data' => $data
+    ]);
 });
 
 Route::get('ajax', function (Request $r) {

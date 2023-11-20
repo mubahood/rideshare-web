@@ -13,6 +13,7 @@ class CreateRouteStagesTable extends Migration
      */
     public function up()
     {
+        return;
         Schema::create('route_stages', function (Blueprint $table) {
             $table->id();
             $table->text('name')->nullable()->comment('Name of the stage');

@@ -418,6 +418,7 @@ class ApiResurceController extends Controller
         if (!Utils::phone_number_is_valid($phone_number)) {
             return $this->error('Invalid phone number. ' . $phone_number);
         }
+        $platform = $r->platform;
 
 
         $u = Administrator::where('phone_number', $phone_number)
@@ -434,7 +435,7 @@ class ApiResurceController extends Controller
             $u->password = password_hash('1234', PASSWORD_DEFAULT);
             $u->otp = '1234';
             $u->save();
-            Utils::send_message($phone_number, 'Testing account detected. Use 1234 as OTP.'); 
+            Utils::send_message($phone_number, 'Testing account detected. Use 1234 as OTP.');
             return $this->success($u, 'Testing account detected. Use 1234 as OTP.');
         } else {
             $resp = Utils::send_otp($u);
@@ -445,8 +446,12 @@ class ApiResurceController extends Controller
         if (strlen($resp) > 0) {
             return $this->error($resp);
         }
-        return $this->success($u, 'Verification code sent to your phone number.');
+        if ($platform == 'web') {
+            die('OTP sent to ' . $phone_number . ".");
+        }
+        return $this->success(null, 'Verification code sent to your phone number.');
     }
+
 
 
     public function person_create(Request $r)

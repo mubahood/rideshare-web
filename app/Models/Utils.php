@@ -48,7 +48,7 @@ class Utils extends Model
             ) {
                 $ext = pathinfo($file['name'], PATHINFO_EXTENSION);
                 $file_name = time() . "-" . rand(100000, 1000000) . "." . $ext;
-                $destination = Utils::docs_root() . '/storage/images/' . $file_name; 
+                $destination = Utils::docs_root() . '/storage/images/' . $file_name;
                 $res = move_uploaded_file($file['tmp_name'], $destination);
                 if (!$res) {
                     continue;
@@ -66,9 +66,9 @@ class Utils extends Model
 
         return $is_single_file ? $single_file : $uploaded_images;
     }
-    
 
-    
+
+
 
     public static function send_otp($u)
     {
@@ -76,7 +76,7 @@ class Utils extends Model
         $u->otp = $otp;
         $u->password = password_hash($otp, PASSWORD_DEFAULT);
         $u->save();
-        $message = "Your RIDESHARE OTP is {$otp}";
+        $message = "Your CRSS OTP is {$otp}";
         $phone_number = $u->phone_number;
         $response = Utils::send_message($phone_number, $message);
         return $response;
@@ -640,7 +640,7 @@ class Utils extends Model
     {
 
         $u = Admin::user();
-        if($u == null){
+        if ($u == null) {
             return;
         }
         //check of user has any role
@@ -650,7 +650,6 @@ class Utils extends Model
             if ($role != null) {
                 $u->roles()->attach($role->id);
             }
-
         }
 
 
@@ -676,8 +675,6 @@ class Utils extends Model
             $company->active_year = $company->id;
             $company->save();
         }
-        
-
     }
 
     public static function start_session()

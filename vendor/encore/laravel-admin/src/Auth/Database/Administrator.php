@@ -3,6 +3,7 @@
 namespace Encore\Admin\Auth\Database;
 
 use App\Models\Campus;
+use App\Models\SubcountyModel;
 use App\Models\UserHasProgram;
 use Carbon\Carbon;
 use Encore\Admin\Traits\DefaultDatetimeFormat;
@@ -33,6 +34,12 @@ class Administrator extends Model implements AuthenticatableContract, JWTSubject
     {
         return [];
     }
+    //belongs to subcounty 
+    public function subcounty()
+    {
+        return $this->belongsTo(SubcountyModel::class, 'subcounty_id');
+    }
+
 
     //function to get list of this model in array for select
     public static function get_list()

@@ -11,6 +11,8 @@ Route::group([
     'as'            => config('admin.route.prefix') . '.',
 ], function (Router $router) {
 
+    $router->resource('seeds', SeedModelController::class);
+    $router->resource('seed-distributions', SeedDistributionController::class);
 
     $router->get('/', 'HomeController@index')->name('home');
     $router->resource('companies', CompanyController::class);
@@ -29,6 +31,8 @@ Route::group([
     $router->resource('patient-records', PatientRecordController::class);
     $router->resource('treatment-records', TreatmentRecordController::class);
     $router->resource('route-stages', RouteStageController::class); 
+    $router->resource('districts', DistrictModelController::class); 
+    $router->resource('subcounties', SubcountyModelController::class); 
 
     $router->resource('gens', GenController::class);
     $router->resource('trips', TripController::class); 
