@@ -684,6 +684,7 @@ class ComposerStaticInitda89eef54c810448a827ed04bb3da82f
         'App\\Models\\Event' => __DIR__ . '/../..' . '/app/Models/Event.php',
         'App\\Models\\FinancialYear' => __DIR__ . '/../..' . '/app/Models/FinancialYear.php',
         'App\\Models\\Gen' => __DIR__ . '/../..' . '/app/Models/Gen.php',
+        'App\\Models\\Negotiation' => __DIR__ . '/../..' . '/app/Models/Negotiation.php',
         'App\\Models\\Patient' => __DIR__ . '/../..' . '/app/Models/Patient.php',
         'App\\Models\\PatientRecord' => __DIR__ . '/../..' . '/app/Models/PatientRecord.php',
         'App\\Models\\Project' => __DIR__ . '/../..' . '/app/Models/Project.php',

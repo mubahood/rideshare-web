@@ -80,6 +80,7 @@ return array(
     'App\\Models\\Event' => $baseDir . '/app/Models/Event.php',
     'App\\Models\\FinancialYear' => $baseDir . '/app/Models/FinancialYear.php',
     'App\\Models\\Gen' => $baseDir . '/app/Models/Gen.php',
+    'App\\Models\\Negotiation' => $baseDir . '/app/Models/Negotiation.php',
     'App\\Models\\Patient' => $baseDir . '/app/Models/Patient.php',
     'App\\Models\\PatientRecord' => $baseDir . '/app/Models/PatientRecord.php',
     'App\\Models\\Project' => $baseDir . '/app/Models/Project.php',

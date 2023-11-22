@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Chat\ChatHead;
 use App\Models\Chat\ChatMessage;
+use App\Models\Negotiation;
 use App\Models\Trip;
 use App\Models\User;
 use App\Traits\ApiResponser;
@@ -19,6 +20,73 @@ class ApiChatController extends Controller
 {
 
     use ApiResponser;
+
+    public function negotiation_create(Request $r)
+    {
+
+        $customer = auth('api')->user();
+        if ($customer == null) {
+            return $this->error('User not found.');
+        }
+
+        if ($customer == null) {
+            return $this->error('User not found.');
+        }
+
+        if ($customer == null) {
+            return $this->error('User not found.');
+        }
+
+        $driver = Administrator::find($r->driver_id);
+        if ($driver == null) {
+            return $this->error('Driver not found.');
+        }
+
+        $old = Negotiation::where([
+            'customer_id' => $customer->id,
+            'driver_id' => $driver->id,
+            'status' => 'Active'
+        ])->first();
+        if ($old != null) {
+            return $this->success($old, 'Success');
+        }
+
+        $old = Negotiation::where([
+            'driver_id' => $driver->id,
+            'status' => 'Active'
+        ])->first();
+        if ($old != null) {
+            return $this->error('Driver already has an active negotiation.');
+        }
+
+        $old = Negotiation::where([
+            'customer_id' => $customer->id,
+            'status' => 'Active'
+        ])->first();
+        if ($old != null) {
+            return $this->error('You already have an active negotiation.');
+        }
+
+        $negotiation = new Negotiation();
+        $negotiation->customer_id = $customer->id;
+        $negotiation->customer_name = $customer->name;
+        $negotiation->driver_id = $driver->id;
+        $negotiation->driver_name = $driver->name;
+        $negotiation->status = 'Active';
+        $negotiation->customer_accepted = 'Pending';
+        $negotiation->customer_driver = 'Pending';
+        $negotiation->pickup_lat = $r->pickup_lat;
+        $negotiation->pickup_lng = $r->pickup_lng;
+        $negotiation->pickup_address = $r->pickup_address;
+        $negotiation->dropoff_lat = $r->dropoff_lat;
+        $negotiation->dropoff_lng = $r->dropoff_lng;
+        $negotiation->dropoff_address = $r->dropoff_address;
+        $negotiation->records = null;
+        $negotiation->details = null;
+        $negotiation->save();
+        return $this->success($negotiation, 'Success');
+    }
+
 
     public function chat_heads_create(Request $r)
     {
@@ -60,10 +128,10 @@ class ApiChatController extends Controller
             if ($chat_head != null) {
                 return $this->success($chat_head, 'Success');
             }
-        }else{
+        } else {
             $chat_head = ChatHead::where([
                 'product_owner_id' => $receiver->id,
-                'customer_id' => $sender->id, 
+                'customer_id' => $sender->id,
             ])->first();
 
             if ($chat_head != null) {
@@ -72,7 +140,7 @@ class ApiChatController extends Controller
 
             $chat_head = ChatHead::where([
                 'product_owner_id' => $sender->id,
-                'customer_id' => $receiver->id, 
+                'customer_id' => $receiver->id,
             ])->first();
 
             if ($chat_head != null) {
@@ -80,7 +148,7 @@ class ApiChatController extends Controller
             }
         }
 
- 
+
         $trip = Trip::find($r->product_id);
         $chat_head = new ChatHead();
         if ($trip != null) {
@@ -104,7 +172,7 @@ class ApiChatController extends Controller
             $chat_head->product_owner_photo = $receiver->avatar;
             $chat_head->customer_name = $sender->name;
             $chat_head->customer_photo = $sender->avatar;
-        } 
+        }
         $chat_head->last_message_body = 'No messages yet.';
         $chat_head->last_message_time = Carbon::now();
         $chat_head->last_message_status = 'sent';
