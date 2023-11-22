@@ -6,4 +6,4 @@ php artisan make:migration add_cols_to_events --table=events
  
 php artisan admin:make SeedDistributionController --model=App\\Models\\SeedDistribution
  
-php artisan make:model SeedDistribution -m
+php artisan make:model Negotiation -m
