@@ -407,6 +407,32 @@ class ApiResurceController extends Controller
         return $this->success($u, 'Logged in successfully.');
     }
 
+    public function request_otp(Request $r)
+    {
+        $admin = Administrator::finde($r->user_id);
+        if ($admin == null) {
+            return $this->error('User not found.');
+        }
+        if ($r->phone_number == null) {
+            return $this->error('Phone number is required.');
+        }
+        $phone_number = Utils::prepare_phone_number(trim($r->phone_number));
+        if (!Utils::phone_number_is_valid($phone_number)) {
+            return $this->error('Invalid phone number. ' . $phone_number);
+        }
+
+        $otp = rand(1000, 9999);
+        if (str_contains($phone_number, '783204')) {
+            $otp = '1234';
+            Utils::send_message($phone_number, 'Testing account detected. Use 1234 as OTP.');
+        } else {
+            Utils::send_message($phone_number, $otp . ' is your CRSS verification code.');
+        }
+
+        return $this->success($otp, 'Verification code sent to your ' . $phone_number . '.');
+    }
+
+
 
 
     public function otp_request(Request $r)

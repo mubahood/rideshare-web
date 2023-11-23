@@ -52,6 +52,7 @@ Route::POST("users/login", [ApiAuthController::class, "login"]);
 Route::POST("users/register", [ApiAuthController::class, "register"]);
 Route::POST("otp-verify", [ApiResurceController::class, "otp_verify"]);
 Route::POST("otp-request", [ApiResurceController::class, "otp_request"]);
+Route::POST("request-otp", [ApiResurceController::class, "request_otp"]);
 Route::get("otp-request", [ApiResurceController::class, "otp_request"]);
 Route::get("users/me", [ApiAuthController::class, "me"]);
 Route::POST("become-driver", [ApiAuthController::class, "become_driver"]);
