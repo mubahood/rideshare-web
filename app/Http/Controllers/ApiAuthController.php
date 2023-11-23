@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use App\Models\RouteStage;
+use App\Models\SeedDistribution;
 use App\Models\Trip;
 use App\Models\TripBooking;
 use App\Models\User;
@@ -49,7 +50,6 @@ class ApiAuthController extends Controller
                 ->get(),
             $message = "Sussesfully",
         );
-
     }
     public function me()
     {
@@ -327,6 +327,34 @@ class ApiAuthController extends Controller
         $admin->user_type = 'Farmer';
         $admin->save();
         return $this->success($admin, $message = "Farm registred successfully.", 200);
+    }
+
+
+
+    public function distribute_seed(Request $r)
+    {
+        $agent = auth('api')->user();
+        if ($agent == null) {
+            return $this->error('User not found.');
+        }
+        $farmer = Administrator::find($r->user_id);
+        if ($farmer == null) {
+            return $this->error('Farmer not found.');
+        }
+
+        $dis = new SeedDistribution();
+        $dis->agent_id = $agent->id;
+        $dis->farmer_id = $farmer->id;
+        $dis->seed_id = $r->seed_id;
+        $dis->quantity = $r->quantity;
+        $dis->description = $r->seed_type;
+
+        try {
+            $dis->save();
+            return $this->success($dis, $message = "Seed distributed successfully.", 200);
+        } catch (\Throwable $th) {
+            return $this->error($th->getMessage());
+        }
     }
 
 
