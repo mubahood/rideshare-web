@@ -294,7 +294,7 @@ class ApiAuthController extends Controller
         }
         $old = Administrator::where('phone_number', $r->phone_number)->first();
         if ($old != null) {
-            return $this->error('Farmer with same phone number already registered.');
+            return $this->error('Farmer with phone number '.$r->phone_number.' already registered.');
         }
         $admin = new Administrator();
 
