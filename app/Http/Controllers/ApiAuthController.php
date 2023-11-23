@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Controllers\Controller;
 use App\Models\RouteStage;
 use App\Models\SeedDistribution;
+use App\Models\SubcountyModel;
 use App\Models\Trip;
 use App\Models\TripBooking;
 use App\Models\User;
@@ -348,7 +349,11 @@ class ApiAuthController extends Controller
         $dis->seed_id = $r->seed_id;
         $dis->quantity = $r->quantity;
         $dis->description = $r->seed_type;
-
+        $sub = SubcountyModel::find($farmer->subcounty_id);
+        if ($sub != null) {
+            $dis->district_id = $sub->district_id;
+        }
+        $dis->subcounty_id = $farmer->subcounty_id;
         try {
             $dis->save();
             return $this->success($dis, $message = "Seed distributed successfully.", 200);
