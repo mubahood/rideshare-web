@@ -292,6 +292,10 @@ class ApiAuthController extends Controller
         if ($u == null) {
             return $this->error('User not found.');
         }
+        $old = Administrator::where('phone_number', $r->phone_number)->first();
+        if ($old != null) {
+            return $this->error('Farmer with same phone number already registered.');
+        }
         $admin = new Administrator();
 
         $admin->driving_license_number = $r->driving_license_number;
@@ -315,10 +319,10 @@ class ApiAuthController extends Controller
         }
 
 
-        $admin->status = 2;
-        $admin->user_type = 'Pending Driver';
+        $admin->status = 1;
+        $admin->user_type = 'Farmer';
         $admin->save();
-        return $this->success($admin, $message = "Driver request submitted successfully.", 200);
+        return $this->success($admin, $message = "Farm registred successfully.", 200);
     }
 
 
