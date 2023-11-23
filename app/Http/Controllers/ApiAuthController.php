@@ -294,7 +294,7 @@ class ApiAuthController extends Controller
         }
         $old = Administrator::where('phone_number', $r->phone_number)->first();
         if ($old != null) {
-            return $this->error('Farmer with phone number '.$r->phone_number.' already registered.');
+            return $this->error('Farmer with phone number ' . $r->phone_number . ' already registered.');
         }
         $admin = new Administrator();
 
@@ -317,7 +317,6 @@ class ApiAuthController extends Controller
                 $admin->driving_license_photo = $image;
             }
         }
-
 
         $admin->status = 1;
         $admin->user_type = 'Farmer';
