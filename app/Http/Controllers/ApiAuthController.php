@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Controllers\Controller;
 use App\Models\RouteStage;
 use App\Models\SeedDistribution;
+use App\Models\SeedModel;
 use App\Models\SubcountyModel;
 use App\Models\Trip;
 use App\Models\TripBooking;
@@ -48,6 +49,14 @@ class ApiAuthController extends Controller
     {
         return $this->success(
             User::where([])
+                ->get(),
+            $message = "Sussesfully",
+        );
+    }
+    public function seeds()
+    {
+        return $this->success(
+            SeedModel::where([])
                 ->get(),
             $message = "Sussesfully",
         );
