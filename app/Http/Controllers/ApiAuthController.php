@@ -286,6 +286,40 @@ class ApiAuthController extends Controller
     }
 
 
+    public function register_farmer(Request $r)
+    {
+        $u = auth('api')->user();
+        if ($u == null) {
+            return $this->error('User not found.');
+        }
+        $admin = new Administrator();
+
+        $admin->driving_license_number = $r->driving_license_number;
+        $admin->nin = $r->nin;
+        $admin->driving_license_number = $u->id;
+        $admin->date_of_birth = Carbon::parse($r->date_of_birth);
+        $admin->phone_number = $r->phone_number;
+        $admin->phone_number_2 = $r->phone_number_2;
+        $admin->nin = $r->nin;
+        $admin->subcounty_id = $r->subcounty_id;
+        $admin->village = $r->village;
+        $admin->parish = $r->parish;
+
+        $image = Utils::upload_images_1($_FILES, true);
+        if ($image != null) {
+            if (strlen($image) > 3) {
+                $admin->driving_license_photo = $image;
+            }
+        }
+
+
+        $admin->status = 2;
+        $admin->user_type = 'Pending Driver';
+        $admin->save();
+        return $this->success($admin, $message = "Driver request submitted successfully.", 200);
+    }
+
+
 
 
 
