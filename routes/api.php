@@ -27,6 +27,7 @@ Route::post('chat-heads-create', [ApiChatController::class, 'chat_heads_create']
 
 
 Route::get("system-users", [ApiAuthController::class, "users"]);
+Route::get("seed-distributions", [ApiAuthController::class, "seed_distributions"]);
 Route::get("seeds", [ApiAuthController::class, "seeds"]);
 Route::get("saccos", [ApiResurceController::class, "saccos"]);
 Route::post("sacco-join-request", [ApiResurceController::class, "sacco_join_request"]);

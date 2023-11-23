@@ -53,6 +53,14 @@ class ApiAuthController extends Controller
             $message = "Sussesfully",
         );
     }
+    public function seed_distributions()
+    {
+        return $this->success(
+            SeedDistribution::where([])
+                ->get(),
+            $message = "Sussesfully",
+        );
+    }
     public function seeds()
     {
         return $this->success(
