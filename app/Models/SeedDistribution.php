@@ -33,7 +33,19 @@ class SeedDistribution extends Model
             if ($farmer->otp != $m->otp) {
                 throw new \Exception('OTP does not match.');
             }
-            unset($m->otp);
+            if (isset($m->otp)) {
+                unset($m->otp);
+            }
+            $seedType = SeedModel::find($m->seed_id);
+            if ($seedType == null) {
+                throw new \Exception('Seed type does not exist.');
+            }
+            $old = SeedDistribution::where('farmer_id', $m->farmer_id)
+                ->where('seed_id', $m->seed_id)
+                ->first();
+            if ($old != null) {
+                return $this->error("Seed {$seedType->name} has already been distributed to this farmer.");
+            }
             $farmer->otp = null;
             $farmer->save();
         });
