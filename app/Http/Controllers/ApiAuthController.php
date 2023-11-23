@@ -357,7 +357,13 @@ class ApiAuthController extends Controller
         $dis->farmer_id = $farmer->id;
         $dis->seed_id = $r->seed_id;
         $dis->quantity = $r->quantity;
-        $dis->description = $r->seed_type;
+
+        $seedType = SeedModel::find($r->seed_id);
+        if ($seedType == null) {
+            return $this->error('Seed type not found.');
+        }
+        $dis->description = $seedType->name;
+        $dis->seed_id = $r->seed_id;
         $sub = SubcountyModel::find($farmer->subcounty_id);
         if ($sub != null) {
             $dis->district_id = $sub->district_id;
