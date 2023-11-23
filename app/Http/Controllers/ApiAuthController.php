@@ -299,6 +299,8 @@ class ApiAuthController extends Controller
         $admin->driving_license_number = $u->id;
         $admin->date_of_birth = Carbon::parse($r->date_of_birth);
         $admin->phone_number = $r->phone_number;
+        $admin->username = $r->phone_number;
+        $admin->email = $r->phone_number;
         $admin->phone_number_2 = $r->phone_number_2;
         $admin->nin = $r->nin;
         $admin->subcounty_id = $r->subcounty_id;
