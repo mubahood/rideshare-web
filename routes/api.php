@@ -54,7 +54,7 @@ Route::get("otp-request", [ApiResurceController::class, "otp_request"]);
 Route::get("users/me", [ApiAuthController::class, "me"]);
 Route::get("users", [ApiAuthController::class, "users"]);
 Route::POST("become-driver", [ApiAuthController::class, "become_driver"]);
-Route::POST("register-farmer", [ApiAuthController::class, "register-farmer"]);
+Route::POST("register-farmer", [ApiAuthController::class, "register_farmer"]);
 Route::POST("people", [ApiResurceController::class, "person_create"]);
 Route::get("jobs", [ApiResurceController::class, "jobs"]);
 Route::get('api/{model}', [ApiResurceController::class, 'index']);
