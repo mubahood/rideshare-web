@@ -19,12 +19,14 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
+
 Route::get('chat-heads', [ApiChatController::class, 'chat_heads']); //==>1 
 Route::get('chat-messages', [ApiChatController::class, 'chat_messages']); //==>2 
 Route::post('chat-send', [ApiChatController::class, 'chat_send']); //==>2 
 Route::post('chat-heads-create', [ApiChatController::class, 'chat_heads_create']); //==>2 
 
 
+Route::get("system-users", [ApiAuthController::class, "users"]);
 Route::get("saccos", [ApiResurceController::class, "saccos"]);
 Route::post("sacco-join-request", [ApiResurceController::class, "sacco_join_request"]);
 
@@ -52,7 +54,6 @@ Route::POST("otp-verify", [ApiResurceController::class, "otp_verify"]);
 Route::POST("otp-request", [ApiResurceController::class, "otp_request"]);
 Route::get("otp-request", [ApiResurceController::class, "otp_request"]);
 Route::get("users/me", [ApiAuthController::class, "me"]);
-Route::get("users", [ApiAuthController::class, "users"]);
 Route::POST("become-driver", [ApiAuthController::class, "become_driver"]);
 Route::POST("register-farmer", [ApiAuthController::class, "register_farmer"]);
 Route::POST("people", [ApiResurceController::class, "person_create"]);
