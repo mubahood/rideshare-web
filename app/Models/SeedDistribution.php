@@ -50,7 +50,27 @@ class SeedDistribution extends Model
             $farmer->save();
         });
     }
+    //getter for farmer_text
+    public function getFarmerTextAttribute()
+    {
+        $farmer = Administrator::find($this->farmer_id);
+        if ($farmer == null) {
+            return 'N/A';
+        }
+        return $farmer->name;
+    }
 
+    //getter for seed_text
+    public function getSeedTextAttribute()
+    {
+        $seed = SeedModel::find($this->seed_id);
+        if ($seed == null) {
+            return 'N/A';
+        }
+        return $seed->name;
+    } 
+
+    protected $appends = ['seed_text', 'farmer_text'];
     public function user()
     {
         return $this->belongsTo(Administrator::class, 'user_id');
