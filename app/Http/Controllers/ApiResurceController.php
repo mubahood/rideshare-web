@@ -409,7 +409,7 @@ class ApiResurceController extends Controller
 
     public function request_otp(Request $r)
     {
-        $admin = Administrator::finde($r->user_id);
+        $admin = Administrator::find($r->user_id);
         if ($admin == null) {
             return $this->error('User not found.');
         }
