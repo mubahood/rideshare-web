@@ -24,7 +24,7 @@
                             <li class="breadcrumb-item">
                                 <a href="{{ url('about-us') }}">About us</a>
                             </li>
-                            <li class="breadcrumb-item active" aria-current="page">For World Wide Smiles - project profile</li>
+                            <li class="breadcrumb-item active" aria-current="page">CRSS - project profile</li>
                         </ol>
                     </nav>
                 </div>
