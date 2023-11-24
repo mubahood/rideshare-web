@@ -430,7 +430,7 @@ class ApiResurceController extends Controller
             Utils::send_message($phone_number, $otp . ' is your CRSS verification code.');
         }
 
-        return $this->success($otp, 'Verification code sent to your ' . $phone_number . '.');
+        return $this->success($otp."", 'Verification code sent to your ' . $phone_number . '.');
     }
 
 
