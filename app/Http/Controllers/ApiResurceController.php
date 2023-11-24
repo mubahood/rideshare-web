@@ -416,7 +416,7 @@ class ApiResurceController extends Controller
         if ($admin->phone_number == null) {
             return $this->error('Phone number is required.');
         }
-        $phone_number = Utils::prepare_phone_number(trim($admin->phone_number));
+        $phone_number = $admin->phone_number;
         if (!Utils::phone_number_is_valid($phone_number)) {
             return $this->error('Invalid phone number. ' . $phone_number);
         }
