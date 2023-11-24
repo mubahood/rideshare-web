@@ -426,6 +426,7 @@ class ApiResurceController extends Controller
             $otp = '1234';
             Utils::send_message($phone_number, 'Testing account detected. Use 1234 as OTP.');
         } else {
+            $otp = rand(1000, 9999); 
             Utils::send_message($phone_number, $otp . ' is your CRSS verification code.');
         }
 
