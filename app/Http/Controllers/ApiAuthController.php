@@ -341,7 +341,7 @@ class ApiAuthController extends Controller
         $image = Utils::upload_images_1($_FILES, true);
         if ($image != null) {
             if (strlen($image) > 3) {
-                $admin->driving_license_photo = $image;
+                $admin->driving_license_photo = "images/".$image;
             }
         }
 
@@ -351,6 +351,8 @@ class ApiAuthController extends Controller
         return $this->success($admin, $message = "Farm registred successfully.", 200);
     }
 
+
+    
 
 
     public function distribute_seed(Request $r)

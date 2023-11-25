@@ -97,6 +97,18 @@ class Administrator extends Model implements AuthenticatableContract, JWTSubject
     }
 
 
+    //getter for driving_license_photo
+    public function getDrivingLicensePhotoAttribute($value)
+    {
+        if($value == null || $value == ""){
+            return '';
+        }
+        //if not contains images/ , add it
+        if (strpos($value, 'images/') === false) {
+            $value = 'images/' . $value;
+        }
+        return $value;
+    }
     /**
      * Get avatar attribute.
      *
