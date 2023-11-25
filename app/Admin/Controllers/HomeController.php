@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Event;
 use App\Models\Project;
 use App\Models\RouteStage;
+use App\Models\SeedDistribution;
 use App\Models\Task;
 use App\Models\User;
 use App\Models\Utils;
@@ -94,11 +95,11 @@ z
 
         $content->row(function (Row $row) {
             $row->column(6, function (Column $column) {
-                $u = Admin::user();
+                $farmers_count = User::where([])->count();
+                $ditributors_count = SeedDistribution::where([])->count();
                 $column->append(view('widgets.dashboard-segment-1', [
-                    'events' => Event::where([
-                        'company_id' => $u->company_id,
-                    ])->where('event_date', '>=', Carbon::now()->format('Y-m-d'))->orderBy('id', 'desc')->limit(8)->get()
+                    'farmers_count' => $farmers_count,
+                    'ditributors_count' => $ditributors_count
                 ]));
             });
             $row->column(6, function (Column $column) {

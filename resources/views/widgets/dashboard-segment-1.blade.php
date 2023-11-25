@@ -8,6 +8,12 @@ if (!isset($project_count)) {
 if (!isset($tasks_count)) {
     $tasks_count = 0;
 }
+if (!isset($farmers_count)) {
+    $farmers_count = 0;
+}
+if (!isset($ditributors_count)) {
+    $ditributors_count = 0;
+}
 ?>
 <div class="row">
     <div class="col-12">
@@ -15,42 +21,21 @@ if (!isset($tasks_count)) {
             <div class="col-md-4">
                 @include('widgets.box-6', [
                     'is_dark' => false,
-                    'title' => 'Today\'s Rides',
+                    'title' => 'Registered Farmers',
                     'icon' => 'box',
-                    'number' => rand(1, 100),
+                    'number' => number_format($farmers_count),
                     'link' => 'javascript:;',
                 ])
             </div>
             <div class="col-md-4">
                 @include('widgets.box-6', [
                     'is_dark' => false,
-                    'title' => 'This Week\'s Rides',
+                    'title' => 'Distribution Records',
                     'icon' => 'list-task',
-                    'number' => rand(50, 300),
-                    'link' => 'javascript:;',
-                ])
-            </div>
-            <div class="col-md-4">
-                @include('widgets.box-6', [
-                    'is_dark' => false,
-                    'title' => 'Upcoming Rides',
-                    'icon' => 'calendar-event-fill',
-                    'number' => rand(2, 500),
+                    'number' => number_format($ditributors_count),
                     'link' => 'javascript:;',
                 ])
             </div>
         </div>
-    </div>
-</div>
-<div class="row">
-    <div class="col-md-6">
-        @include('dashboard.upcoming-events', [
-            'items' => $events,
-        ])
-    </div>
-    <div class="col-md-6">
-        @include('dashboard.tasks', [
-            'items' => $events,
-        ])
     </div>
 </div>
