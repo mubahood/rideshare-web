@@ -404,10 +404,11 @@ class ApiAuthController extends Controller
         } else {
             throw new Exception("Farmer Subcounty not found.", 1);
         }
+
         $image = Utils::upload_images_1($_FILES, true);
         if ($image != null) {
             if (strlen($image) > 3) {
-                $sub->description = "images/" . $image;
+                $dis->description = "images/" . $image;
             }
         }
 
