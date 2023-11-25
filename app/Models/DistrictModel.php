@@ -56,7 +56,6 @@ class DistrictModel extends Model
         }
         return $seed->name;
     }
-
     //appends for farmer_text
     protected $appends = ['farmer_text', 'seed_text',];
 }
