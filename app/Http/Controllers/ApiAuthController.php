@@ -14,6 +14,7 @@ use App\Models\Utils;
 use App\Traits\ApiResponser;
 use Carbon\Carbon;
 use Encore\Admin\Auth\Database\Administrator;
+use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Config;
 use Tymon\JWTAuth\Facades\JWTAuth;
@@ -342,7 +343,6 @@ class ApiAuthController extends Controller
         $admin->username = $r->phone_number;
         $admin->email = $r->phone_number;
         $admin->phone_number_2 = $r->phone_number_2;
-        $admin->nin = $r->nin;
         $admin->subcounty_id = $r->subcounty_id;
         $admin->village = $r->village;
         $admin->parish = $r->parish;
@@ -397,13 +397,20 @@ class ApiAuthController extends Controller
         $dis->seed_id = $r->seed_id;
         $dis->quantity = $r->quantity;
 
-
-        $dis->description = $seedType->name;
         $dis->seed_id = $r->seed_id;
         $sub = SubcountyModel::find($farmer->subcounty_id);
         if ($sub != null) {
             $dis->district_id = $sub->district_id;
+        } else {
+            throw new Exception("Farmer Subcounty not found.", 1);
         }
+        $image = Utils::upload_images_1($_FILES, true);
+        if ($image != null) {
+            if (strlen($image) > 3) {
+                $sub->description = "images/" . $image;
+            }
+        }
+
         $dis->subcounty_id = $farmer->subcounty_id;
         try {
             $dis->save();
