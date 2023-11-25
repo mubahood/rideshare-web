@@ -465,10 +465,8 @@ class ApiResurceController extends Controller
             $u->save();
             Utils::send_message($phone_number, 'Testing account detected. Use 1234 as OTP.');
             return $this->success($u, 'Testing account detected. Use 1234 as OTP.');
-        } else {
-            $resp = Utils::send_otp($u);
         }
-
+        
         $u->save();
         $resp = Utils::send_otp($u);
         if (strlen($resp) > 0) {
