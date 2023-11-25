@@ -319,8 +319,21 @@ class ApiAuthController extends Controller
         if ($old != null) {
             return $this->error('Farmer with phone number ' . $r->phone_number . ' already registered.');
         }
+
+        if ($r->first_name == null) {
+            return $this->error('First name is required.');
+        }
+        if ($r->last_name == null) {
+            return $this->error('Last name is required.');
+        }
+        if ($r->subcounty_id == null) {
+            return $this->error('Subcounty is required.');
+        }
+
         $admin = new Administrator();
 
+        $admin->first_name = $r->first_name;
+        $admin->last_name = $r->last_name;
         $admin->driving_license_number = $r->driving_license_number;
         $admin->nin = $r->nin;
         $admin->driving_license_number = $u->id;
@@ -341,7 +354,7 @@ class ApiAuthController extends Controller
         $image = Utils::upload_images_1($_FILES, true);
         if ($image != null) {
             if (strlen($image) > 3) {
-                $admin->driving_license_photo = "images/".$image;
+                $admin->driving_license_photo = "images/" . $image;
             }
         }
 
@@ -352,7 +365,7 @@ class ApiAuthController extends Controller
     }
 
 
-    
+
 
 
     public function distribute_seed(Request $r)
