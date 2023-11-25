@@ -579,7 +579,7 @@ class ApiResurceController extends Controller
         foreach (SubcountyModel::all() as $key => $value) {
             $data[] = [
                 'id' => $value->id,
-                'text' => $value->name_text
+                'name' => $value->name_text
             ];
         }
         return $this->success($data, 'Success');
