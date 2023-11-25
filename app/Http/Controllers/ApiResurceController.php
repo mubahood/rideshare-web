@@ -18,6 +18,7 @@ use App\Models\Product;
 use App\Models\RouteStage;
 use App\Models\Sacco;
 use App\Models\ServiceProvider;
+use App\Models\SubcountyModel;
 use App\Models\Trip;
 use App\Models\TripBooking;
 use App\Models\Utils;
@@ -426,11 +427,11 @@ class ApiResurceController extends Controller
             $otp = '1234';
             Utils::send_message($phone_number, 'Testing account detected. Use 1234 as OTP.');
         } else {
-            $otp = rand(1000, 9999); 
+            $otp = rand(1000, 9999);
             Utils::send_message($phone_number, $otp . ' is your CRSS verification code.');
         }
 
-        return $this->success($otp."", 'Verification code sent to your ' . $phone_number . '.');
+        return $this->success($otp . "", 'Verification code sent to your ' . $phone_number . '.');
     }
 
 
@@ -574,7 +575,14 @@ class ApiResurceController extends Controller
     }
     public function route_stages()
     {
-        return $this->success(RouteStage::where([])->orderby('id', 'desc')->get(), 'Success');
+        $data = [];
+        foreach (SubcountyModel::all() as $key => $value) {
+            $data[] = [
+                'id' => $value->id,
+                'text' => $value->name_text
+            ];
+        }
+        return $this->success($data, 'Success');
     }
     public function trips()
     {
