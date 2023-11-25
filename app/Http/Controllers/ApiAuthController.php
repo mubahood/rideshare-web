@@ -333,6 +333,10 @@ class ApiAuthController extends Controller
         $admin->subcounty_id = $r->subcounty_id;
         $admin->village = $r->village;
         $admin->parish = $r->parish;
+        $admin->ben_1 = $r->ben_1;
+        $admin->ben_2 = $r->ben_2;
+        $admin->ben_3 = $r->ben_3;
+        $admin->ben_4 = $r->ben_4;
 
         $image = Utils::upload_images_1($_FILES, true);
         if ($image != null) {
