@@ -48,27 +48,19 @@ class ApiChatController extends Controller
             'driver_id' => $driver->id,
             'status' => 'Active'
         ])->first();
-        if ($old != null) {
-            return $this->success($old, 'Success');
-        }
-
+       
         $old = Negotiation::where([
             'driver_id' => $driver->id,
             'status' => 'Active'
         ])->first();
-        if ($old != null) {
-            return $this->error('Driver already has an active negotiation.');
+    
+        if ($old == null) {
+            $negotiation = new Negotiation();
+        }else{
+            $negotiation = $old; 
         }
 
-        $old = Negotiation::where([
-            'customer_id' => $customer->id,
-            'status' => 'Active'
-        ])->first();
-        if ($old != null) {
-            return $this->error('You already have an active negotiation.');
-        }
 
-        $negotiation = new Negotiation();
         $negotiation->customer_id = $customer->id;
         $negotiation->customer_name = $customer->name;
         $negotiation->driver_id = $driver->id;
