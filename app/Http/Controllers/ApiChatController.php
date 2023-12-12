@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Chat\ChatHead;
 use App\Models\Chat\ChatMessage;
 use App\Models\Negotiation;
+use App\Models\NegotiationRecord;
 use App\Models\Trip;
 use App\Models\User;
 use App\Traits\ApiResponser;
@@ -84,7 +85,59 @@ class ApiChatController extends Controller
         $negotiation->records = null;
         $negotiation->details = null;
         $negotiation->save();
+        if ($negotiation->id < 1) {
+            return $this->error('Negotiation not created.');
+        }
+
+        $price = ((int)($r->price));
+
+        $record = new NegotiationRecord();
+        $record->price = $price;
+        $record->negotiation_id = $negotiation->id;
+        $record->customer_id = $customer->id;
+        $record->driver_id = $driver->id;
+        $record->last_negotiator_id = $customer->id;
+        $record->first_negotiator_id = $customer->id;
+        $record->price_accepted = 'No';
+        $record->message_type = 'Negotiation';
+        $record->message_body = null;
+        $record->image_url = null;
+        $record->audio_url = null;
+        $record->is_received = 'No';
+        $record->is_seen = 'No';
+        $record->latitude = null;
+        $record->longitude = null;
+        $record->save();
         return $this->success($negotiation, 'Success');
+    }
+
+
+    public function negotiations()
+    {
+        $user = auth('api')->user();
+        if ($user == null) {
+            return $this->error('User not found.');
+        }
+        $negotiations = Negotiation::where([
+            'customer_id' => $user->id,
+        ])->orWhere([
+            'driver_id' => $user->id
+        ])->get();
+        return $this->success($negotiations, 'Success');
+    }
+
+    public function negotiations_records()
+    {
+        $user = auth('api')->user();
+        if ($user == null) {
+            return $this->error('User not found.');
+        }
+        $recs = NegotiationRecord::where([
+            'customer_id' => $user->id,
+        ])->orWhere([
+            'driver_id' => $user->id
+        ])->get();
+        return $this->success($recs, 'Success');
     }
 
 

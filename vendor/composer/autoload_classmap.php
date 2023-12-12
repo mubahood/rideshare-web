@@ -81,6 +81,7 @@ return array(
     'App\\Models\\FinancialYear' => $baseDir . '/app/Models/FinancialYear.php',
     'App\\Models\\Gen' => $baseDir . '/app/Models/Gen.php',
     'App\\Models\\Negotiation' => $baseDir . '/app/Models/Negotiation.php',
+    'App\\Models\\NegotiationRecord' => $baseDir . '/app/Models/NegotiationRecord.php',
     'App\\Models\\Patient' => $baseDir . '/app/Models/Patient.php',
     'App\\Models\\PatientRecord' => $baseDir . '/app/Models/PatientRecord.php',
     'App\\Models\\Project' => $baseDir . '/app/Models/Project.php',
