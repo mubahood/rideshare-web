@@ -126,17 +126,28 @@ class ApiChatController extends Controller
         return $this->success($negotiations, 'Success');
     }
 
-    public function negotiations_records()
+    public function negotiations_records(Request $r)
     {
         $user = auth('api')->user();
         if ($user == null) {
             return $this->error('User not found.');
         }
-        $recs = NegotiationRecord::where([
+        $recs = [];
+
+        if (isset($r->negotiation_id) && $r->negotiation_id != null) {
+            $recs = NegotiationRecord::where([
+                'negotiation_id' => $r->negotiation_id,
+            ])->get();
+            return $this->success($recs, 'Success');
+        }
+
+        NegotiationRecord::where([
             'customer_id' => $user->id,
         ])->orWhere([
             'driver_id' => $user->id
         ])->get();
+
+
         return $this->success($recs, 'Success');
     }
 
