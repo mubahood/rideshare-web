@@ -26,6 +26,7 @@ Route::post('chat-send', [ApiChatController::class, 'chat_send']); //==>2
 Route::post('chat-heads-create', [ApiChatController::class, 'chat_heads_create']); //==>2 
 
 
+Route::get("drivers", [ApiAuthController::class, "drivers"]);
 Route::get("system-users", [ApiAuthController::class, "users"]);
 Route::get("seed-distributions", [ApiAuthController::class, "seed_distributions"]);
 Route::get("seeds", [ApiAuthController::class, "seeds"]);

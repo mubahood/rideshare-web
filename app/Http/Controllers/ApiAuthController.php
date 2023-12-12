@@ -46,6 +46,18 @@ class ApiAuthController extends Controller
      *
      * @return \Illuminate\Http\JsonResponse
      */
+    public function drivers()
+    {
+        return $this->success(
+            User::where([
+                "user_type" => "Driver",
+                "status" => 1,
+            ])
+                ->get(),
+            $message = "Sussesfully",
+        );
+    }
+
     public function users()
     {
         return $this->success(
