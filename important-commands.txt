@@ -7,3 +7,6 @@ php artisan make:migration add_cols_to_events --table=events
 `php artisan admin:make TripController --model=App\\Models\\Trip`
  
 php artisan make:model NegotiationRecord -m
+
+composer install --ignore-platform-req=php
+
