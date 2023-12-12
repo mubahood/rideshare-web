@@ -26,6 +26,7 @@ Route::post('chat-heads-create', [ApiChatController::class, 'chat_heads_create']
 Route::post('negotiations', [ApiChatController::class, 'negotiation_create']); //==>2 
 
 
+Route::get("drivers", [ApiResurceController::class, "drivers"]); 
 Route::get("saccos", [ApiResurceController::class, "saccos"]);
 Route::post("sacco-join-request", [ApiResurceController::class, "sacco_join_request"]);
 

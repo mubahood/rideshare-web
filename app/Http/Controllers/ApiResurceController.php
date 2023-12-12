@@ -20,6 +20,7 @@ use App\Models\Sacco;
 use App\Models\ServiceProvider;
 use App\Models\Trip;
 use App\Models\TripBooking;
+use App\Models\User;
 use App\Models\Utils;
 use App\Traits\ApiResponser;
 use Carbon\Carbon;
@@ -35,6 +36,17 @@ class ApiResurceController extends Controller
 
     use ApiResponser;
 
+    public function drivers(Request $r)
+    {
+        return $this->success(
+            User::where([
+                'user_type' => 'Driver',
+                'status' => 1
+            ])->orderby('id', 'desc')->get(),
+            $message = "Sussesfully",
+            200
+        );
+    }
     public function saccos(Request $r)
     {
         return $this->success(
@@ -434,7 +446,7 @@ class ApiResurceController extends Controller
             $u->password = password_hash('1234', PASSWORD_DEFAULT);
             $u->otp = '1234';
             $u->save();
-            Utils::send_message($phone_number, 'Testing account detected. Use 1234 as OTP.'); 
+            Utils::send_message($phone_number, 'Testing account detected. Use 1234 as OTP.');
             return $this->success($u, 'Testing account detected. Use 1234 as OTP.');
         } else {
             $resp = Utils::send_otp($u);

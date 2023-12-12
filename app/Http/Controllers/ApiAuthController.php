@@ -55,7 +55,7 @@ class ApiAuthController extends Controller
         return $this->success($data, $message = "Profile details", 200);
     }
 
-
+ 
     public function trips_bookings_create(Request $r)
     {
         $query = auth('api')->user();
