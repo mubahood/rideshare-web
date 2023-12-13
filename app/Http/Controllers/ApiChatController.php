@@ -241,7 +241,7 @@ class ApiChatController extends Controller
             return $this->success($recs, 'Success');
         }
 
-        NegotiationRecord::where([
+        $recs = NegotiationRecord::where([
             'customer_id' => $user->id,
         ])->orWhere([
             'driver_id' => $user->id
