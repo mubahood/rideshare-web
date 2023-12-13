@@ -48,16 +48,16 @@ class ApiChatController extends Controller
             'driver_id' => $driver->id,
             'status' => 'Active'
         ])->first();
-       
+
         $old = Negotiation::where([
             'driver_id' => $driver->id,
             'status' => 'Active'
         ])->first();
-    
+
         if ($old == null) {
             $negotiation = new Negotiation();
-        }else{
-            $negotiation = $old; 
+        } else {
+            $negotiation = $old;
         }
 
 
@@ -101,6 +101,66 @@ class ApiChatController extends Controller
         $record->longitude = null;
         $record->save();
         return $this->success($negotiation, 'Success');
+    }
+
+
+    public function negotiations_records_create(Request $r)
+    {
+
+        $sender = auth('api')->user();
+        if ($sender == null) {
+            return $this->error('User not found.');
+        }
+
+        if (!isset($r->negotiation_id)) {
+            return $this->error('Neg id not found.');
+        }
+
+        if (!isset($r->message_type)) {
+            return $this->error('Neg type not found.');
+        }
+
+        $neg = Negotiation::find($r->negotiation_id);
+        if ($neg == null) {
+            return $this->error('Neg not found.');
+        }
+
+        if ($neg->message_type == 'Negotiation') {
+            $lasts = NegotiationRecord::where([
+                'negotiation_id' => $neg->id
+            ])->orderBy('id', 'desc')
+                ->get();
+            if ($lasts->count() > 0) {
+                if ($lasts[0]->last_negotiator_id == $sender->id) {
+                    return $this->error('Wait for the other party to reply.');
+                }
+            }
+        }
+
+
+
+
+        $price = ((int)($r->price));
+
+        $record = new NegotiationRecord();
+        $record->price = $price;
+        $record->negotiation_id = $neg->id;
+        $record->customer_id = $neg->customer_id;
+        $record->driver_id = $neg->driver_id;
+        $record->last_negotiator_id = $sender->id;
+        $record->first_negotiator_id = $neg->customer_id;
+        $record->price_accepted = $r->price_accepted;
+        $record->message_type = $r->message_type;
+        $record->message_body = $r->message_body;
+        $record->image_url = null;
+        $record->audio_url = null;
+        $record->is_received = 'No';
+        $record->is_seen = 'No';
+        $record->latitude = $r->latitude;
+        $record->longitude = $r->longitude;
+        $record->save();
+
+        return $this->success($record, 'Success');
     }
 
 
