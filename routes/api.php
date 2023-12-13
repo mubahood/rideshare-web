@@ -25,6 +25,7 @@ Route::post('chat-send', [ApiChatController::class, 'chat_send']); //==>2
 Route::post('chat-heads-create', [ApiChatController::class, 'chat_heads_create']); //==>2 
 Route::post('negotiations', [ApiChatController::class, 'negotiation_create']); //==>2 
 Route::post('negotiations-records', [ApiChatController::class, 'negotiations_records_create']); //==>2 
+Route::post('negotiations-accept', [ApiChatController::class, 'negotiations_accept']); //==>2 
 Route::get('negotiations', [ApiChatController::class, 'negotiations']); //==>2 
 Route::get('negotiations-records', [ApiChatController::class, 'negotiations_records']); //==>2 
 

@@ -163,6 +163,54 @@ class ApiChatController extends Controller
         return $this->success($record, 'Success');
     }
 
+    public function negotiations_accept(Request $r)
+    {
+
+        $sender = auth('api')->user();
+        if ($sender == null) {
+            return $this->error('User not found.');
+        }
+
+        if (!isset($r->negotiation_id)) {
+            return $this->error('Neg id not found.');
+        }
+
+        if (!isset($r->message_type)) {
+            return $this->error('Neg type not found.');
+        }
+
+        $neg = Negotiation::find($r->negotiation_id);
+        if ($neg == null) {
+            return $this->error('Neg not found.');
+        }
+
+        if (
+            $r->customer_accepted == 'Yes' && $r->customer_driver == 'Yes'
+        ) {
+            $neg->status = 'Accepted';
+            $neg->customer_accepted = 'Yes';
+            $neg->customer_driver = 'Yes';
+            $neg->save();
+            return $this->success($neg, 'Success');
+        } else  if (
+            $r->customer_accepted == 'No' && $r->customer_driver == 'No'
+        ) {
+            $neg->status = 'Canceled';
+            $neg->customer_accepted = 'No';
+            $neg->customer_driver = 'No';
+            $neg->save();
+            return $this->success($neg, 'Success');
+        } else  if (
+            $r->status == 'Completed'
+        ) {
+            $neg->status = 'Completed';
+            $neg->save();
+            return $this->success($neg, 'Success');
+        } else {
+            return $this->error('Invalid status.');
+        }
+    }
+
 
     public function negotiations()
     {
@@ -190,17 +238,17 @@ class ApiChatController extends Controller
             $recs = NegotiationRecord::where([
                 'negotiation_id' => $r->negotiation_id,
             ])->get();
-            return $this->success($recs, 'Success 1');
+            return $this->success($recs, 'Success');
         }
 
-        $recs = NegotiationRecord::where([
+        NegotiationRecord::where([
             'customer_id' => $user->id,
         ])->orWhere([
             'driver_id' => $user->id
         ])->get();
 
 
-        return $this->success($recs, 'Success 2');
+        return $this->success($recs, 'Success');
     }
 
 
