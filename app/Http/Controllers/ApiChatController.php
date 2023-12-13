@@ -190,7 +190,7 @@ class ApiChatController extends Controller
             $recs = NegotiationRecord::where([
                 'negotiation_id' => $r->negotiation_id,
             ])->get();
-            return $this->success($recs, 'Success');
+            return $this->success($recs, 'Success 1');
         }
 
         NegotiationRecord::where([
@@ -200,7 +200,7 @@ class ApiChatController extends Controller
         ])->get();
 
 
-        return $this->success($recs, 'Success');
+        return $this->success($recs, 'Success 2');
     }
 
 
