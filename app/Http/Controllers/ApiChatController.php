@@ -132,7 +132,7 @@ class ApiChatController extends Controller
                 ->get();
             if ($lasts->count() > 0) {
                 if ($lasts[0]->last_negotiator_id == $sender->id) {
-                    return $this->error('Wait for the other party to reply.');
+                    //return $this->error('Wait for the other party to reply.');
                 }
             }
         }
