@@ -24,7 +24,6 @@ class ApiChatController extends Controller
 
     public function negotiation_create(Request $r)
     {
-
         $customer = auth('api')->user();
         if ($customer == null) {
             return $this->error('User not found.');
