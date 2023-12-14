@@ -59,7 +59,7 @@ class ApiChatController extends Controller
         } else {
             $negotiation = $old;
         }
-        $negotiation = new Negotiation();
+        //$negotiation = new Negotiation();
 
 
         $negotiation->customer_id = $customer->id;
