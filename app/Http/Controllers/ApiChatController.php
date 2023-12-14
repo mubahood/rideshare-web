@@ -93,7 +93,7 @@ class ApiChatController extends Controller
         $record->first_negotiator_id = $customer->id;
         $record->price_accepted = 'No';
         $record->message_type = 'Negotiation';
-        $record->message_body = null;
+        $record->message_body = $r->message_body;
         $record->image_url = null;
         $record->audio_url = null;
         $record->is_received = 'No';
