@@ -4,52 +4,10 @@ use App\Http\Controllers\ApiAuthController;
 use App\Http\Controllers\ApiChatController;
 use App\Http\Controllers\ApiResurceController;
 use App\Http\Middleware\EnsureTokenIsValid;
+use App\Http\Middleware\JwtMiddleware;
 use Encore\Admin\Auth\Database\Administrator;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
-
-/*
-|--------------------------------------------------------------------------
-| API Routes
-|--------------------------------------------------------------------------
-|
-| Here is where you can register API routes for your application. These
-| routes are loaded by the RouteServiceProvider within a group which
-| is assigned the "api" middleware group. Enjoy building your API!
-|
-*/
-
-Route::get('chat-heads', [ApiChatController::class, 'chat_heads']); //==>1 
-Route::get('chat-messages', [ApiChatController::class, 'chat_messages']); //==>2 
-Route::post('chat-send', [ApiChatController::class, 'chat_send']); //==>2 
-Route::post('chat-heads-create', [ApiChatController::class, 'chat_heads_create']); //==>2 
-Route::post('negotiations', [ApiChatController::class, 'negotiation_create']); //==>2 
-Route::post('negotiations-records', [ApiChatController::class, 'negotiations_records_create']); //==>2 
-Route::post('negotiations-accept', [ApiChatController::class, 'negotiations_accept']); //==>2 
-Route::get('negotiations', [ApiChatController::class, 'negotiations']); //==>2 
-Route::get('negotiations-records', [ApiChatController::class, 'negotiations_records']); //==>2 
-
-
-Route::get("drivers", [ApiResurceController::class, "drivers"]); 
-Route::get("saccos", [ApiResurceController::class, "saccos"]);
-Route::post("sacco-join-request", [ApiResurceController::class, "sacco_join_request"]);
-
-Route::middleware([EnsureTokenIsValid::class])->group(function () {
-    Route::get("sacco-members", [ApiResurceController::class, "sacco_members"]);
-    Route::post("sacco-members-review", [ApiResurceController::class, "sacco_members_review"]);
-    Route::get("my-sacco-membership", [ApiResurceController::class, "my_sacco_membership"]);
-
-    Route::get("gardens", [ApiResurceController::class, "gardens"]);
-    Route::get("garden-activities", [ApiResurceController::class, "garden_activities"]);
-    Route::get("garden-activities", [ApiResurceController::class, "garden_activities"]);
-    Route::POST("gardens", [ApiResurceController::class, "garden_create"]);
-    Route::POST("products", [ApiResurceController::class, "product_create"]);
-    Route::POST("garden-activities", [ApiResurceController::class, "activity_submit"]);
-});
-Route::get("crops", [ApiResurceController::class, "crops"]);
-
-
-
 
 
 Route::POST("users/login", [ApiAuthController::class, "login"]);
@@ -57,27 +15,35 @@ Route::POST("users/register", [ApiAuthController::class, "register"]);
 Route::POST("otp-verify", [ApiResurceController::class, "otp_verify"]);
 Route::POST("otp-request", [ApiResurceController::class, "otp_request"]);
 Route::get("otp-request", [ApiResurceController::class, "otp_request"]);
-Route::get("users/me", [ApiAuthController::class, "me"]);
-Route::get("users", [ApiAuthController::class, "users"]);
-Route::POST("become-driver", [ApiAuthController::class, "become_driver"]);
-Route::POST("people", [ApiResurceController::class, "person_create"]);
-Route::get("jobs", [ApiResurceController::class, "jobs"]);
-Route::get('api/{model}', [ApiResurceController::class, 'index']);
-Route::get('groups', [ApiResurceController::class, 'groups']);
-Route::get('associations', [ApiResurceController::class, 'associations']);
-Route::get('institutions', [ApiResurceController::class, 'institutions']);
-Route::get('service-providers', [ApiResurceController::class, 'service_providers']);
-Route::get('counselling-centres', [ApiResurceController::class, 'counselling_centres']);
-Route::get('products', [ApiResurceController::class, 'products']);
-Route::get('events', [ApiResurceController::class, 'events']);
-Route::get('news-posts', [ApiResurceController::class, 'news_posts']);
-Route::get('route-stages', [ApiResurceController::class, 'route_stages']);
-Route::get('trips', [ApiResurceController::class, 'trips']);
-Route::get('trips-bookings', [ApiResurceController::class, 'trips_bookings']);
-Route::POST("trips-create", [ApiAuthController::class, "trips_create"]);
-Route::POST("trips-bookings-create", [ApiAuthController::class, "trips_bookings_create"]);
-Route::POST("trips-bookings-update", [ApiAuthController::class, "trips_bookings_update"]);
-Route::POST("trips-update", [ApiAuthController::class, "trips_update"]);
+
+Route::middleware([JwtMiddleware::class])->group(function () {
+
+
+    Route::get("drivers", [ApiResurceController::class, "drivers"]);
+    Route::get("saccos", [ApiResurceController::class, "saccos"]);
+    Route::post("sacco-join-request", [ApiResurceController::class, "sacco_join_request"]);
+    Route::get('chat-heads', [ApiChatController::class, 'chat_heads']); //==>1 
+    Route::get('chat-messages', [ApiChatController::class, 'chat_messages']); //==>2 
+    Route::post('chat-send', [ApiChatController::class, 'chat_send']); //==>2 
+    Route::post('chat-heads-create', [ApiChatController::class, 'chat_heads_create']); //==>2 
+    Route::post('negotiations', [ApiChatController::class, 'negotiation_create']); //==>2 
+    Route::post('negotiations-records', [ApiChatController::class, 'negotiations_records_create']); //==>2 
+    Route::post('negotiations-accept', [ApiChatController::class, 'negotiations_accept']); //==>2 
+    Route::get('negotiations', [ApiChatController::class, 'negotiations']); //==>2 
+    Route::get('negotiations-records', [ApiChatController::class, 'negotiations_records']); //==>2 
+    Route::post("trips-drivers", [ApiAuthController::class, "trips_drivers"]);
+    Route::get("users/me", [ApiAuthController::class, "me"]);
+    Route::get("users", [ApiAuthController::class, "users"]);
+    Route::POST("become-driver", [ApiAuthController::class, "become_driver"]);
+    Route::get('api/{model}', [ApiResurceController::class, 'index']);
+    Route::get('route-stages', [ApiResurceController::class, 'route_stages']);
+    Route::get('trips', [ApiResurceController::class, 'trips']);
+    Route::get('trips-bookings', [ApiResurceController::class, 'trips_bookings']);
+    Route::POST("trips-create", [ApiAuthController::class, "trips_create"]);
+    Route::POST("trips-bookings-create", [ApiAuthController::class, "trips_bookings_create"]);
+    Route::POST("trips-bookings-update", [ApiAuthController::class, "trips_bookings_update"]);
+    Route::POST("trips-initiate", [ApiAuthController::class, "trips_initiate"]);
+});
 
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
@@ -96,7 +62,7 @@ Route::get('/users', function (Request $request) {
     foreach ($districts as $district) {
         $data[] = [
             'id' => $district->id,
-            'text' => $district->name." - ".$district->phone_number
+            'text' => $district->name . " - " . $district->phone_number
         ];
     }
     return response()->json([

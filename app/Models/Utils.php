@@ -13,6 +13,38 @@ class Utils extends Model
 {
     use HasFactory;
 
+
+    public static function haversineDistance($coord1, $coord2)
+    {
+        // Extract latitude and longitude from the coordinates
+        list($lat1, $lon1) = explode(',', $coord1);
+        list($lat2, $lon2) = explode(',', $coord2);
+
+        // Convert latitude and longitude from degrees to radians
+        $lat1 = deg2rad($lat1);
+        $lon1 = deg2rad($lon1);
+        $lat2 = deg2rad($lat2);
+        $lon2 = deg2rad($lon2);
+
+        // Calculate the difference between latitudes and longitudes
+        $dlat = $lat2 - $lat1;
+        $dlon = $lon2 - $lon1;
+
+        // Haversine formula
+        $a = sin($dlat / 2) ** 2 + cos($lat1) * cos($lat2) * sin($dlon / 2) ** 2;
+        $c = 2 * asin(sqrt($a));
+
+        // Radius of the Earth in kilometers (mean value)
+        $earthRadius = 6371;
+
+        // Calculate the distance
+        $distance = $earthRadius * $c;
+
+        return $distance;
+    }
+
+
+
     //static php fuction that greets the user according to the time of the day
     public static function greet()
     {
@@ -48,7 +80,11 @@ class Utils extends Model
             ) {
                 $ext = pathinfo($file['name'], PATHINFO_EXTENSION);
                 $file_name = time() . "-" . rand(100000, 1000000) . "." . $ext;
-                $destination = Utils::docs_root() . '/storage/images/' . $file_name; 
+                try{
+                    $destination = Utils::docs_root() . '/storage/images/' . $file_name;
+                }catch(\Throwable $th){
+                    throw $th->getMessage();
+                }
                 $res = move_uploaded_file($file['tmp_name'], $destination);
                 if (!$res) {
                     continue;
@@ -66,9 +102,9 @@ class Utils extends Model
 
         return $is_single_file ? $single_file : $uploaded_images;
     }
-    
 
-    
+
+
 
     public static function send_otp($u)
     {
@@ -640,7 +676,7 @@ class Utils extends Model
     {
 
         $u = Admin::user();
-        if($u == null){
+        if ($u == null) {
             return;
         }
         //check of user has any role
@@ -650,7 +686,6 @@ class Utils extends Model
             if ($role != null) {
                 $u->roles()->attach($role->id);
             }
-
         }
 
 
@@ -676,8 +711,6 @@ class Utils extends Model
             $company->active_year = $company->id;
             $company->save();
         }
-        
-
     }
 
     public static function start_session()

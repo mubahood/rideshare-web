@@ -25,17 +25,7 @@ class ApiAuthController extends Controller
      *
      * @return void
      */
-    public function __construct()
-    {
-
-        /* $token = auth('api')->attempt([
-            'username' => 'admin',
-            'password' => 'admin',
-        ]);
-        die($token); */
-        $this->middleware('auth:api', ['except' => ['login', 'register', 'otp-verify']]);
-    }
-
+ 
 
     /**
      * Get a JWT via given credentials.
@@ -51,11 +41,15 @@ class ApiAuthController extends Controller
         $query = auth('api')->user();
         $data = [];
         $admin = Administrator::find($query->id);
+        if ($admin != null) {
+            $admin->updated_at = Carbon::now()->format('Y-m-d H:i:s');
+            $admin->save();
+        }
         $data[] = $admin;
         return $this->success($data, $message = "Profile details", 200);
     }
 
- 
+
     public function trips_bookings_create(Request $r)
     {
         $query = auth('api')->user();
@@ -180,6 +174,69 @@ class ApiAuthController extends Controller
     }
 
 
+    public function trips_drivers(Request $r)
+    { 
+        $query = auth('api')->user();
+        $u = Administrator::find($query->id);
+        if ($u == null) {
+            return $this->error('User not found.');
+        }
+
+        if ($r->automobile == null) {
+            return $this->error('You have not specified your automobile.');
+        }
+        if ($r->current_address == null) {
+            return $this->error('You have not specified your current address.');
+        }
+
+        $drivers = Administrator::where('user_type', 'Driver')
+            ->where('status', 1)
+            ->where('automobile', $r->automobile)
+            /* ->where('ready_for_trip', 'Yes') */
+            ->where('id', '!=', $u->id)
+            ->limit(200)
+            ->orderBy('updated_at', 'desc')
+            ->get();
+
+
+        $data = [];
+        //calculate distance
+        foreach ($drivers as $key => $driver) {
+            $distance = Utils::haversineDistance($r->current_address, $driver->current_address);
+            $driver->distance = $distance;
+
+            $min_speed = 60;
+            $max_speed = 80;
+
+            $min_time = $distance / $max_speed;
+            $max_time = $distance / $min_speed;
+
+            $min_hours = floor($min_time);
+            $min_minutes = ($min_time - $min_hours) * 60;
+            $min_word = $min_hours . "hr ";
+            if ($min_hours < 1) {
+                $min_word = ((int)($min_minutes)) . " minutes";
+            } else {
+                $min_word = $min_hours . "hr and " . ((int)($min_minutes)) . "min";
+            }
+
+            $max_hours = floor($max_time);
+            $max_minutes = ($max_time - $max_hours) * 60;
+            $max_word = $max_hours . "hr ";
+            if ($max_hours < 1) {
+                $max_word = ((int)($max_minutes)) . " minutes";
+            } else {
+                $max_word = $max_hours . "hr " . ((int)($max_minutes)) . "min";
+            }
+            $driver->min_time = $min_word;
+            $driver->max_time = $max_word;
+            $driver->distance = $distance;
+
+            $data[] = $driver;
+        }
+
+        return $this->success($data, $message = "Trip booking updated successfully.", 1);
+    }
     public function trips_update(Request $r)
     {
         $query = auth('api')->user();

@@ -36,6 +36,12 @@ class ApiResurceController extends Controller
 
     use ApiResponser;
 
+    //construcor function except login and register
+    public function __construct()
+    {
+        $this->middleware('auth:api', ['except' => ['login', 'register', 'otp_request', 'otp_verify']]);
+    } 
+
     public function drivers(Request $r)
     {
         return $this->success(

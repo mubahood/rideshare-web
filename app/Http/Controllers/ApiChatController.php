@@ -8,6 +8,7 @@ use App\Models\Negotiation;
 use App\Models\NegotiationRecord;
 use App\Models\Trip;
 use App\Models\User;
+use App\Models\Utils;
 use App\Traits\ApiResponser;
 use Carbon\Carbon;
 use Encore\Admin\Auth\Database\Administrator;
@@ -24,23 +25,48 @@ class ApiChatController extends Controller
 
     public function negotiation_create(Request $r)
     {
+
         $customer = auth('api')->user();
         if ($customer == null) {
-            return $this->error('User not found.');
+            return $this->error('Custom account not found.');
         }
-
-        if ($customer == null) {
-            return $this->error('User not found.');
-        }
-
-        if ($customer == null) {
-            return $this->error('User not found.');
-        }
-
+  
         $driver = Administrator::find($r->driver_id);
         if ($driver == null) {
             return $this->error('Driver not found.');
         }
+
+        if (!isset($r->message_body)) {
+            return $this->error('Message body not found.');
+        }
+        if (!isset($r->price)) {
+            return $this->error('Price not found.');
+        }
+        //check for dropoff_lng
+        if (!isset($r->dropoff_lng)) {
+            return $this->error('Dropoff longitude not found.');
+        }
+        //check for dropoff_lat
+        if (!isset($r->dropoff_lat)) {
+            return $this->error('Dropoff latitude not found.');
+        }
+        //check for dropoff_address
+        if (!isset($r->dropoff_address)) {
+            return $this->error('Dropoff address not found.');
+        }
+        //check for pickup_lng
+        if (!isset($r->pickup_lng)) {
+            return $this->error('Pickup longitude not found.');
+        }
+        //check for pickup_lat
+        if (!isset($r->pickup_lat)) {
+            return $this->error('Pickup latitude not found.');
+        }
+        //check for pickup_address
+        if (!isset($r->pickup_address)) {
+            return $this->error('Pickup address not found.');
+        }
+        
 
         $old = Negotiation::where([
             'customer_id' => $customer->id,
@@ -59,8 +85,6 @@ class ApiChatController extends Controller
             $negotiation = $old;
         }
         $negotiation = new Negotiation();
-
-
         $negotiation->customer_id = $customer->id;
         $negotiation->customer_name = $customer->name;
         $negotiation->driver_id = $driver->id;
@@ -81,6 +105,7 @@ class ApiChatController extends Controller
             return $this->error('Negotiation not created.');
         }
 
+
         $price = ((int)($r->price));
 
         $record = new NegotiationRecord();
@@ -99,6 +124,20 @@ class ApiChatController extends Controller
         $record->is_seen = 'No';
         $record->latitude = null;
         $record->longitude = null;
+
+        if (!empty($_FILES)) {
+            try {
+                $file = Utils::upload_images_1($_FILES, true);
+                if ($file != null) {
+                    if (strlen($file) > 3) {
+                        $record->audio_url = $file;
+                    }
+                }
+            } catch (Throwable $e) {
+                //return $this->error($e->getMessage());
+            }
+        }
+
         $record->save();
         return $this->success($negotiation, 'Success');
     }

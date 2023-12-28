@@ -16,6 +16,7 @@ Route::group([
     $router->resource('companies', CompanyController::class);
     $router->resource('clients', ClientController::class);
     $router->resource('employees', EmployeesController::class);
+    $router->resource('users', EmployeesController::class);
     $router->resource('admin-roles', AdminRoleController::class);
     $router->resource('projects', ProjectController::class);
     $router->resource('project-sections', ProjectSectionController::class);

@@ -176,7 +176,7 @@ class JWT
     public function parseToken()
     {
         if (! $token = $this->parser->parseToken()) {
-            throw new JWTException('The token could not be parsed from the request');
+            throw new JWTException('The token could not be parsed from the request => '.$token);
         }
 
         return $this->setToken($token);

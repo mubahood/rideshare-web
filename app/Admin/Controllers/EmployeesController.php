@@ -3,6 +3,7 @@
 namespace App\Admin\Controllers;
 
 use App\Models\AdminRole;
+use App\Models\Utils;
 use Encore\Admin\Auth\Database\Administrator;
 use Encore\Admin\Controllers\AdminController;
 use Encore\Admin\Facades\Admin;
@@ -52,17 +53,43 @@ class EmployeesController extends AdminController
 
         $grid->quickSearch('name')->placeholder('Search by name');
         $grid->disableBatchActions();
-        $grid->column('id', __('Id'))->sortable();
+        $grid->column('avatar', __('Photo'))->image('', 50, 50)
+            ->sortable();
+        $grid->column('id', __('Id'))->sortable()->hide();
+        $grid->column('created_at', __('Joined'))
+            ->display(function ($created_at) {
+                return Utils::my_date_time($created_at);
+            })->sortable();
+        $grid->column('updated_at', __('Last Seen'))
+            ->display(function ($created_at) {
+                return Utils::my_date_time($created_at);
+            })->sortable();
+
         $grid->column('name', __('Name'))->sortable();
         $grid->column('phone_number', __('Phone number'))->sortable();
         $grid->column('phone_number_2', __('Phone number 2'))->hide();
+
+        $grid->column('sex', 'Gender')
+            ->sortable()
+            ->filter([
+                'Male' => 'Male',
+                'Female' => 'Female',
+            ]);
+
         $grid->column('user_type', __('User Role'))
             ->label([
-                'Admin' => 'success',
-                'Driver' => 'warning',
+                'Admin' => 'primary',
+                'Driver' => 'success',
+                'Pending Driver' => 'danger',
                 'Customer' => 'info',
             ], 'danger')
-            ->sortable();
+            ->sortable()
+            ->filter([
+                'Admin' => 'Admin',
+                'Driver' => 'Driver',
+                'Pending Driver' => 'Pending Driver',
+                'Customer' => 'Customer',
+            ]);
         $grid->column('status', __('User Status'))
             ->using(
                 [
@@ -78,18 +105,23 @@ class EmployeesController extends AdminController
                 '1' => 'success',
             ], 'danger')->sortable();
 
+        $grid->column('automobile', __('Automobile'))
+            ->display(function ($automobile) {
+                if ($automobile) {
+                    return $automobile;
+                }
+                return 'N/A';
+            })->sortable();
 
-        /* 
-    $form->radioCard('user_type', 'User Role')->options([
-            'Admin' => 'Admin',
-            'Driver' => 'Driver',
-            'Customer' => 'Customer',
-        ])->rules('required');
-        $form->radioCard('status', 'Status')->options([
-            '0' => 'Blocked',
-            '2' => 'Pending',
-            '1' => 'Active',
-        ])->rules('required'); */
+        $grid->column('ready_for_trip', 'Availability')
+            ->display(function ($ready_for_trip) {
+                if ($ready_for_trip == 'Yes') {
+                    return 'Ready For Trip';
+                }
+                return 'Not Ready For Trip';
+            })->sortable();
+
+
 
         return $grid;
     }
@@ -129,20 +161,51 @@ class EmployeesController extends AdminController
         $form->text('first_name')->rules('required');
         $form->text('last_name')->rules('required');
         $form->text('phone_number', 'Phone number')->rules('required');
+        $form->date('date_of_birth', 'Date of birth');
         $form->text('phone_number_2', 'Phone number 2');
+        $form->image('avatar', 'Photo')->uniqueName();
+
+        $form->radio('sex', 'Gender')->options([
+            'Male' => 'Male',
+            'Female' => 'Female',
+        ])->rules('required');
+
+        $form->divider();
+
 
         $form->radioCard('user_type', 'User Role')->options([
             'Admin' => 'Admin',
             'Driver' => 'Driver',
             'Customer' => 'Customer',
-        ])->rules('required');
+        ])->rules('required')
+            ->default('Customer')
+            ->when('Driver', function (Form $form) {
+                $form->divider();
+                $form->radioCard('automobile', 'Automobile')->options([
+                    'Special Car' => 'Special Car',
+                    'Taxi' => 'Taxi',
+                    'Ambulance' => 'Ambulance',
+                    'Bodaboda' => 'Bodaboda',
+                ]);
+                $form->radioCard('ready_for_trip', 'Availability')->options([
+                    'Yes' => 'Yes',
+                    'No' => 'No',
+                ])->rules('required');
+                $form->text('current_address', 'Current Address')
+                    ->help('GPS Coordinates: <span id="gps"></span>');
+                $form->text('nin', 'National ID Number');
+                $form->text('driving_license_number', 'Driving License Number');
+                $form->date('driving_license_issue_date', 'Driving License Issue Date');
+                $form->date('driving_license_validity', 'Driving License Validity');
+                $form->text('driving_license_issue_authority', 'Driving License Issue Authority');
+                $form->image('driving_license_photo', 'Driving License Photo')->uniqueName();
+            })->default('Customer');
+
         $form->radioCard('status', 'Status')->options([
             '0' => 'Blocked',
             '2' => 'Pending',
             '1' => 'Active',
         ])->rules('required');
-
-
 
 
         $form->disableReset();
