@@ -4,6 +4,7 @@ namespace App\Http\Middleware;
 
 use App\Models\Utils;
 use Closure;
+use Dflydev\DotAccessData\Util;
 use JWTAuth;
 use Exception;
 use Tymon\JWTAuth\Facades\JWTAuth as FacadesJWTAuth;
@@ -32,9 +33,13 @@ class JwtMiddleware extends BaseMiddleware
         if (!$request->expectsJson()) {
             return $next($request);
         } 
-        
+
+        //check if request is login or register
+
         if (
             Str::contains($_SERVER['REQUEST_URI'], 'login') ||
+            Str::contains($_SERVER['REQUEST_URI'], 'otp') ||
+            Str::contains($_SERVER['REQUEST_URI'], 'otp-verify') ||
             Str::contains($_SERVER['REQUEST_URI'], 'register')
         ) {
             return $next($request);

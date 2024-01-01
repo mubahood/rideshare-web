@@ -30,7 +30,7 @@ class ApiChatController extends Controller
         if ($customer == null) {
             return $this->error('Custom account not found.');
         }
-  
+
         $driver = Administrator::find($r->driver_id);
         if ($driver == null) {
             return $this->error('Driver not found.');
@@ -66,7 +66,7 @@ class ApiChatController extends Controller
         if (!isset($r->pickup_address)) {
             return $this->error('Pickup address not found.');
         }
-        
+
 
         $old = Negotiation::where([
             'customer_id' => $customer->id,
@@ -248,6 +248,31 @@ class ApiChatController extends Controller
         } else {
             return $this->error('Invalid status.');
         }
+    }
+
+
+    public function negotiations_complete(Request $r)
+    { 
+        $neg = Negotiation::find($r->negotiation_id);
+        if ($neg == null) {
+            return $this->error('Neg not found.');
+        }
+
+        $neg->status = 'Completed';
+        $neg->save();
+        return $this->success($neg, 'Success');
+    }
+
+    public function negotiations_cancel(Request $r)
+    { 
+        $neg = Negotiation::find($r->negotiation_id);
+        if ($neg == null) {
+            return $this->error('Neg not found.');
+        }
+
+        $neg->status = 'Canceled';
+        $neg->save();
+        return $this->success($neg, 'Success');
     }
 
 

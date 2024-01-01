@@ -17,7 +17,7 @@ Route::POST("otp-request", [ApiResurceController::class, "otp_request"]);
 Route::get("otp-request", [ApiResurceController::class, "otp_request"]);
 
 Route::middleware([JwtMiddleware::class])->group(function () {
-
+    Route::get('route-stages', [ApiResurceController::class, 'route_stages']);
 
     Route::get("drivers", [ApiResurceController::class, "drivers"]);
     Route::get("saccos", [ApiResurceController::class, "saccos"]);
@@ -29,6 +29,8 @@ Route::middleware([JwtMiddleware::class])->group(function () {
     Route::post('negotiations', [ApiChatController::class, 'negotiation_create']); //==>2 
     Route::post('negotiations-records', [ApiChatController::class, 'negotiations_records_create']); //==>2 
     Route::post('negotiations-accept', [ApiChatController::class, 'negotiations_accept']); //==>2 
+    Route::post('negotiations-complete', [ApiChatController::class, 'negotiations_complete']); //==>2 
+    Route::post('negotiations-cancel', [ApiChatController::class, 'negotiations_cancel']); //==>2 
     Route::get('negotiations', [ApiChatController::class, 'negotiations']); //==>2 
     Route::get('negotiations-records', [ApiChatController::class, 'negotiations_records']); //==>2 
     Route::post("trips-drivers", [ApiAuthController::class, "trips_drivers"]);
@@ -36,7 +38,6 @@ Route::middleware([JwtMiddleware::class])->group(function () {
     Route::get("users", [ApiAuthController::class, "users"]);
     Route::POST("become-driver", [ApiAuthController::class, "become_driver"]);
     Route::get('api/{model}', [ApiResurceController::class, 'index']);
-    Route::get('route-stages', [ApiResurceController::class, 'route_stages']);
     Route::get('trips', [ApiResurceController::class, 'trips']);
     Route::get('trips-bookings', [ApiResurceController::class, 'trips_bookings']);
     Route::POST("trips-create", [ApiAuthController::class, "trips_create"]);
