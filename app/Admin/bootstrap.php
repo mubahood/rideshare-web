@@ -140,7 +140,7 @@ $my_coord = "0.302258,32.609356";
 
 foreach (User::where([])->orderBy('id', 'desc')->get()->take(100) as $key => $u) {
 
-    $distance = Utils::haversineDistance($my_coord, $u->current_address);
+
 
     $min_speed = 30;
     $max_speed = 50;
@@ -171,7 +171,8 @@ foreach (User::where([])->orderBy('id', 'desc')->get()->take(100) as $key => $u)
 
 
     $u->current_address = $coordinates[rand(0, count($coordinates) - 1)];
-    $u->user_type = 'Driver';
+    $distance = Utils::haversineDistance($my_coord, $u->current_address); 
+    //$u->user_type = 'Driver';
     $u->status = 1;
     $u->save();
 }
