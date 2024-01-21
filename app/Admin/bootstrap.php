@@ -138,9 +138,9 @@ $my_coord = "0.302258,32.609356";
 
 
 
-foreach (User::where([])->orderBy('id', 'desc')->get()->take(100) as $key => $u) {
+/* foreach (User::where([])->orderBy('id', 'desc')->get()->take(100) as $key => $u) {
 
-    /* $distance = Utils::haversineDistance($my_coord, $u->current_address);
+    $distance = Utils::haversineDistance($my_coord, $u->current_address);
 
     $min_speed = 30;
     $max_speed = 50;
@@ -167,7 +167,7 @@ foreach (User::where([])->orderBy('id', 'desc')->get()->take(100) as $key => $u)
     }
 
     echo $distance . " - " . $min_word . " - " . $max_word . "<br>";
-    continue; */
+    continue;
 
 
     $u->current_address = $coordinates[rand(0, count($coordinates) - 1)];
@@ -175,10 +175,10 @@ foreach (User::where([])->orderBy('id', 'desc')->get()->take(100) as $key => $u)
     $u->status = 1;
     $u->save();
 }
-
+ */
 //die();
 
-foreach (range(1, 100) as $index) {
+/* foreach (range(1, 100) as $index) {
     $u = new \App\Models\User();
     $u->username = $faker->email;
     $u->password = bcrypt('1234');
@@ -215,9 +215,8 @@ foreach (range(1, 100) as $index) {
     $u->driving_license_photo = $faker->imageUrl();
     $u->automobile = ['Special Car', 'Taxi', 'Ambulance', 'Bodaboda'][rand(0, 3)];
     $u->save();
-}
+} */
 
-die("done");
 Utils::system_boot();
 
 
