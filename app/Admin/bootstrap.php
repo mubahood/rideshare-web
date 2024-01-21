@@ -137,6 +137,12 @@ $coordinates = array(
 $my_coord = "0.302258,32.609356";
 
 
+foreach (User::all() as $key => $value) {
+    $value->phone_number = str_replace('+255', '+25', $value->phone_number);
+    $value->phone_number_2 = str_replace('+255', '+25', $value->phone_number_2);
+    $value->save();
+}
+
 
 /* foreach (User::where([])->orderBy('id', 'desc')->get()->take(100) as $key => $u) {
 
