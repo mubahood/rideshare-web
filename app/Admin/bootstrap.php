@@ -138,7 +138,7 @@ $my_coord = "0.302258,32.609356";
 
 
 
-/* foreach (User::where([])->orderBy('id', 'desc')->get()->take(100) as $key => $u) {
+foreach (User::where([])->orderBy('id', 'desc')->get()->take(100) as $key => $u) {
 
     $distance = Utils::haversineDistance($my_coord, $u->current_address);
 
@@ -174,10 +174,10 @@ $my_coord = "0.302258,32.609356";
     $u->user_type = 'Driver';
     $u->status = 1;
     $u->save();
-} */
+}
 
 //die();
-/*
+
 foreach (range(1, 100) as $index) {
     $u = new \App\Models\User();
     $u->username = $faker->email;
@@ -210,7 +210,7 @@ foreach (range(1, 100) as $index) {
     $u->save();
 }
 
-die(""); */
+die("done");
 Utils::system_boot();
 
 
