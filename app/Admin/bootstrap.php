@@ -140,7 +140,7 @@ $my_coord = "0.302258,32.609356";
 
 foreach (User::where([])->orderBy('id', 'desc')->get()->take(100) as $key => $u) {
 
-
+    /* $distance = Utils::haversineDistance($my_coord, $u->current_address);
 
     $min_speed = 30;
     $max_speed = 50;
@@ -167,11 +167,10 @@ foreach (User::where([])->orderBy('id', 'desc')->get()->take(100) as $key => $u)
     }
 
     echo $distance . " - " . $min_word . " - " . $max_word . "<br>";
-    continue;
+    continue; */
 
 
     $u->current_address = $coordinates[rand(0, count($coordinates) - 1)];
-    $distance = Utils::haversineDistance($my_coord, $u->current_address); 
     //$u->user_type = 'Driver';
     $u->status = 1;
     $u->save();
@@ -194,9 +193,16 @@ foreach (range(1, 100) as $index) {
     $u->place_of_birth = $faker->address();
     $u->home_address = $faker->address();
     $u->sex = ['Women', 'Men'][rand(0, 1)];
-    $u->phone_number = $faker->phoneNumber;
-    $u->phone_number_2 = $faker->phoneNumber;
-    $u->current_address = '0.0,0.0';
+
+    $lstDigit = $index;
+    if(strlen($lstDigit) == 1){
+        $lstDigit = '00'.$lstDigit;
+    }else if(strlen($lstDigit) == 2){
+        $lstDigit = '0'.$lstDigit;
+    }
+    $u->phone_number = '+2556783204'.$lstDigit;
+    $u->phone_number_2 = $u->phone_number;
+    $u->current_address = $coordinates[rand(0, count($coordinates) - 1)];
     $u->email = $faker->email;
     $u->otp = '1234';
     $u->nin = $faker->ean8;
