@@ -13,6 +13,42 @@ class Utils extends Model
 {
     use HasFactory;
 
+    public static function sendNotification(
+        $msg,
+        $receiver,
+        $headings = 'U-LITS',
+        $data = [],
+        $url = null,
+        $buttons = null,
+        $schedule = null,
+    ) {
+
+  
+        try {
+            \OneSignal::addParams(
+                [
+/*                     'android_channel_id' => '52f033a9-34fd-4524-b610-002acb90cb76', */
+                    'large_icon' => 'https://u-lits.com/logo-1.png',
+                    'small_icon' => 'logo_1',
+                ]
+            )
+                ->sendNotificationToExternalUser(
+                    $msg,
+                    "$receiver",
+                    $url = $url,
+                    $data = $data,
+                    $buttons = $buttons,
+                    $schedule = $schedule,
+                    $headings = $headings
+                );
+        } catch (\Throwable $th) {
+            throw $th; 
+            //throw $th;
+        }
+
+        return;
+    }
+
 
     public static function haversineDistance($coord1, $coord2)
     {
@@ -80,9 +116,9 @@ class Utils extends Model
             ) {
                 $ext = pathinfo($file['name'], PATHINFO_EXTENSION);
                 $file_name = time() . "-" . rand(100000, 1000000) . "." . $ext;
-                try{
+                try {
                     $destination = Utils::docs_root() . '/storage/images/' . $file_name;
-                }catch(\Throwable $th){
+                } catch (\Throwable $th) {
                     throw $th->getMessage();
                 }
                 $res = move_uploaded_file($file['tmp_name'], $destination);
