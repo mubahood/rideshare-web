@@ -20,7 +20,7 @@ Route::get('/test', function () {
             12931,
             $headings =  $title,
             $data = [
-                'type' => 'NegotiationStarted',
+                'type' => 'NegotiationStart',
                 'id' => 1,
             ]
         );

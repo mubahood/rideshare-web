@@ -23,11 +23,11 @@ class Utils extends Model
         $schedule = null,
     ) {
 
-  
+
         try {
             \OneSignal::addParams(
                 [
-/*                     'android_channel_id' => '52f033a9-34fd-4524-b610-002acb90cb76', */
+                    'android_channel_id' => '52f033a9-34fd-4524-b610-002acb90cb76',
                     'large_icon' => 'https://u-lits.com/logo-1.png',
                     'small_icon' => 'logo_1',
                 ]
@@ -42,7 +42,7 @@ class Utils extends Model
                     $headings = $headings
                 );
         } catch (\Throwable $th) {
-            throw $th; 
+            throw $th;
             //throw $th;
         }
 
