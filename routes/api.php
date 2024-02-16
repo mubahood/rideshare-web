@@ -45,6 +45,10 @@ Route::middleware([JwtMiddleware::class])->group(function () {
     Route::POST("trips-bookings-create", [ApiAuthController::class, "trips_bookings_create"]);
     Route::POST("trips-bookings-update", [ApiAuthController::class, "trips_bookings_update"]);
     Route::POST("trips-initiate", [ApiAuthController::class, "trips_initiate"]);
+    Route::POST("go-on-off", [ApiAuthController::class, "go_on_off"]);
+    Route::POST("negotiation-updates", [ApiAuthController::class, "negotiation_updates"]);
+
+    Route::POST("refresh-status", [ApiAuthController::class, "refresh_status"]);
 });
 
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {

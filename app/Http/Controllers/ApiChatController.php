@@ -223,6 +223,14 @@ class ApiChatController extends Controller
             return $this->error('Neg not found.');
         }
 
+        if ($r->message_type == 'Started') {
+            $neg->status = 'Started';
+            $neg->customer_accepted = 'Yes';
+            $neg->customer_driver = 'Yes';
+            $neg->save();
+            return $this->success($neg, 'Success');
+        }
+
         if (
             $r->customer_accepted == 'Yes' && $r->customer_driver == 'Yes'
         ) {
@@ -252,7 +260,7 @@ class ApiChatController extends Controller
 
 
     public function negotiations_complete(Request $r)
-    { 
+    {
         $neg = Negotiation::find($r->negotiation_id);
         if ($neg == null) {
             return $this->error('Neg not found.');
@@ -264,7 +272,7 @@ class ApiChatController extends Controller
     }
 
     public function negotiations_cancel(Request $r)
-    { 
+    {
         $neg = Negotiation::find($r->negotiation_id);
         if ($neg == null) {
             return $this->error('Neg not found.');

@@ -25,6 +25,8 @@ use App\Admin\Extensions\Nav\Shortcut;
 use App\Admin\Extensions\Nav\Dropdown;
 use App\Models\User;
 
+//Utils::send_message('+256783204665','Hello from the other side');
+
 //generate a users
 
 $faker = Faker\Factory::create();

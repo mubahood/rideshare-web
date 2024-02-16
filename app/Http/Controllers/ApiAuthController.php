@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
+use App\Models\Negotiation;
 use App\Models\RouteStage;
 use App\Models\Trip;
 use App\Models\TripBooking;
@@ -25,7 +26,7 @@ class ApiAuthController extends Controller
      *
      * @return void
      */
- 
+
 
     /**
      * Get a JWT via given credentials.
@@ -174,8 +175,107 @@ class ApiAuthController extends Controller
     }
 
 
+    public function go_on_off(Request $r)
+    {
+        $query = auth('api')->user();
+        $u = Administrator::find($query->id);
+        if ($u == null) {
+            return $this->error('User not found.');
+        }
+        if ($r->lati == null) {
+            return $this->error('lati  missing.');
+        }
+        if ($r->long == null) {
+            return $this->error('long  missing.');
+        }
+        if ($r->status == null) {
+            return $this->error('status  missing.');
+        }
+        if ($r->status != 'online' && $r->status != 'offline') {
+            return $this->error('Submitted status is invalid.');
+        }
+
+        if ($u->status != 1) {
+            return $this->error('Your driver account is not active.');
+        }
+
+        $u->current_address = $r->lati . "," . $r->long;
+        $status = 'offline';
+        if ($r->status == 'online') {
+            $t = Negotiation::where('driver_id', $u->id)
+                ->where('is_active', 'Yes')
+                ->first();
+            if ($t != null) {
+                $u->ready_for_trip = 'No';
+                $u->save();
+                $status = 'offline';
+                return $this->error('You have an active negotiation. You cannot go online. First end the active trip and then try again.');
+            }
+            $status = 'online';
+            $u->ready_for_trip = 'Yes';
+            $u->save();
+        } else {
+            $status = 'offline';
+            $u->ready_for_trip = 'No';
+            $u->save();
+        }
+        return $this->success($status, $message = "Success!, you are now $status.", 1);
+    }
+
+    public function negotiation_updates(Request $r)
+    {
+        $neg = Negotiation::find($r->id);
+        if ($neg == null) {
+            return $this->error('Negotiation not found.');
+        }
+        return $this->success($neg, $message = "success.", 1);
+    }
+
+    public function refresh_status(Request $r)
+    {
+        $query = auth('api')->user();
+        $u = Administrator::find($query->id);
+        if ($u == null) {
+            return $this->error('User not found.');
+        }
+        if ($r->lati == null) {
+            return $this->error('lati  missing.');
+        }
+        if ($r->long == null) {
+            return $this->error('long  missing.');
+        }
+
+        if ($u->status != 1) {
+            return $this->error('Your driver account is not active.');
+        }
+        $data = [];
+        $data['status'] = 'offline';
+        if ($u->ready_for_trip != 'Yes') {
+            $data['status'] = 'offline';
+        } else {
+            $data['status'] = 'online';
+        }
+
+        $t = Negotiation::where('driver_id', $u->id)
+            ->where('is_active', 'Yes')
+            ->first();
+
+        $data['has_trip'] = null;
+        if ($t == null) {
+            $data['trip'] = null;
+            $data['has_trip'] = 'No';
+        } else {
+            $data['has_trip'] = 'Yes';
+            $data['trip'] = $t;
+            $data['status'] = 'online';
+        }
+
+        return $this->success($data, $message = "", 1);
+    }
+
+
     public function trips_drivers(Request $r)
-    { 
+    {
         $query = auth('api')->user();
         $u = Administrator::find($query->id);
         if ($u == null) {
@@ -191,10 +291,10 @@ class ApiAuthController extends Controller
 
         $drivers = Administrator::where('user_type', 'Driver')
             ->where('status', 1)
-            ->where('automobile', $r->automobile)
-            /* ->where('ready_for_trip', 'Yes') */
+            /* ->where('automobile', $r->automobile) */
+            ->where('ready_for_trip', 'Yes')
             ->where('id', '!=', $u->id)
-            ->limit(200)
+            ->limit(25)
             ->orderBy('updated_at', 'desc')
             ->get();
 

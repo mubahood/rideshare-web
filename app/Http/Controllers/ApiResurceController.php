@@ -40,7 +40,7 @@ class ApiResurceController extends Controller
     public function __construct()
     {
         $this->middleware('auth:api', ['except' => ['login', 'register', 'otp_request', 'otp_verify']]);
-    } 
+    }
 
     public function drivers(Request $r)
     {
@@ -452,7 +452,7 @@ class ApiResurceController extends Controller
             $u->password = password_hash('1234', PASSWORD_DEFAULT);
             $u->otp = '1234';
             $u->save();
-            Utils::send_message($phone_number, 'Testing account detected. Use 1234 as OTP.');
+            //Utils::send_message($phone_number, 'Testing account detected. Use 1234 as OTP.');
             return $this->success($u, 'Testing account detected. Use 1234 as OTP.');
         } else {
             $resp = Utils::send_otp($u);

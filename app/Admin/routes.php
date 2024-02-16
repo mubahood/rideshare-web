@@ -30,6 +30,7 @@ Route::group([
     $router->resource('patient-records', PatientRecordController::class);
     $router->resource('treatment-records', TreatmentRecordController::class);
     $router->resource('route-stages', RouteStageController::class); 
+    $router->resource('negotiations', NegotiationController::class);
 
     $router->resource('gens', GenController::class);
     $router->resource('trips', TripController::class); 
