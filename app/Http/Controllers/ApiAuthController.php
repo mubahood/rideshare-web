@@ -302,6 +302,16 @@ class ApiAuthController extends Controller
         $data = [];
         //calculate distance
         foreach ($drivers as $key => $driver) {
+
+            //check if $driver->current_address contains ,
+            if (!str_contains($driver->current_address, ',')) {
+                continue;
+            }
+            //check if $r->current_address contains ,
+            if (!str_contains($r->current_address, ',')) {
+                continue;
+            }
+
             $distance = Utils::haversineDistance($r->current_address, $driver->current_address);
             $driver->distance = $distance;
 
