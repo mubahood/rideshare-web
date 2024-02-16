@@ -67,4 +67,31 @@ class Negotiation extends Model
     {
         return $this->belongsTo(User::class, 'driver_id');
     }
+
+    //appends for customer_phone and driver_phone
+    protected $appends = ['customer_phone', 'driver_phone'];
+
+    //belongs to customer
+    public function customer()
+    {
+        return $this->belongsTo(User::class, 'customer_id');
+    }
+
+    //get customer phone
+    public function getCustomerPhoneAttribute()
+    {
+        if ($this->customer == null) {
+            return null;
+        }
+        return $this->customer->phone_number;
+    }
+
+    //get driver phone
+    public function getDriverPhoneAttribute()
+    {
+        if ($this->driver == null) {
+            return null;
+        }
+        return $this->driver->phone_number;
+    }
 }
