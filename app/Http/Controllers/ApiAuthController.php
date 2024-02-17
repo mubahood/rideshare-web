@@ -431,12 +431,16 @@ class ApiAuthController extends Controller
         if ($r->nin == null) {
             return $this->error('Driving license photo is required.');
         }
+        if ($r->automobile == null) {
+            return $this->error('Automobile not specified, download the new app update and try again.');
+        }
         $admin->driving_license_number = $r->driving_license_number;
         $admin->nin = $r->nin;
         $admin->driving_license_number = $r->driving_license_number;
         $admin->driving_license_issue_date = Carbon::parse($r->driving_license_issue_date);
         $admin->driving_license_validity = Carbon::parse($r->driving_license_validity);
         $admin->driving_license_issue_authority = $r->driving_license_issue_authority;
+        $admin->automobile = $r->automobile;
 
         $image = Utils::upload_images_1($_FILES, true);
         if ($image != null) {
