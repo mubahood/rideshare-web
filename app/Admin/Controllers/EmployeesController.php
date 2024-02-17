@@ -52,7 +52,6 @@ class EmployeesController extends AdminController
 
 
         $grid->quickSearch('name')->placeholder('Search by name');
-        $grid->disableBatchActions();
         $grid->column('avatar', __('Photo'))->image('', 50, 50)
             ->sortable();
         $grid->column('id', __('Id'))->sortable()->hide();
