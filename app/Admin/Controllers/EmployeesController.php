@@ -113,12 +113,14 @@ class EmployeesController extends AdminController
             })->sortable();
 
         $grid->column('ready_for_trip', 'Availability')
-            ->display(function ($ready_for_trip) {
-                if ($ready_for_trip == 'Yes') {
-                    return 'Ready For Trip';
-                }
-                return 'Not Ready For Trip';
-            })->sortable();
+            ->dot([
+                'Yes' => 'success',
+                'No' => 'danger',
+            ], 'danger')
+            ->filter([
+                'Yes' => 'Yes',
+                'No' => 'No',
+            ])->sortable(); 
 
 
 
