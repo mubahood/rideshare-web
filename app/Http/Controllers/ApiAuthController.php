@@ -401,7 +401,7 @@ class ApiAuthController extends Controller
         $trip->vehicel_reg_number = $r->car_reg_number;
         $trip->slots = $r->available_slots;
         $trip->details = $r->details;
-        $trip->car_model = $r->car_brand;
+        $trip->car_model = $r->car_model;
         $trip->price = $r->price;
         $trip->start_gps = $r->start_gps;
         $trip->end_pgs = $r->end_pgs;
