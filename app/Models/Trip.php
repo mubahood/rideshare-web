@@ -15,15 +15,6 @@ class Trip extends Model
     {
         parent::boot();
         static::creating(function ($model) {
-            //can't create a trip while having another trip in pending status
-            $pending_trips = Trip::where([
-                'status' => 'Pending',
-                'driver_id' => $model->driver_id
-            ])->first();
-            if ($pending_trips) {
-                throw new \Exception("You can't create a trip while having another trip in pending status.");
-                return false;
-            }
         });
 
 

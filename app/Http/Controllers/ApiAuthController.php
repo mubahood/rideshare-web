@@ -386,12 +386,14 @@ class ApiAuthController extends Controller
         if ($r->price == null) {
             return $this->error('Price is required.');
         }
+
+
         $trip = new Trip();
         $trip->driver_id = $u->id;
         $trip->customer_id = $u->id;
-        $trip->start_stage_id = $r->origin_id;
-        $trip->end_stage_id = $r->destination_id;
-        $trip->scheduled_start_time = $r->departure_date;
+        $trip->start_stage_id = 1;
+        $trip->end_stage_id = 1;
+        $trip->scheduled_start_time = Carbon::parse($r->departure_date);
         $trip->scheduled_end_time = $r->arrival_date;
         $trip->start_time = null;
         $trip->end_time = null;
@@ -401,6 +403,11 @@ class ApiAuthController extends Controller
         $trip->details = $r->details;
         $trip->car_model = $r->car_brand;
         $trip->price = $r->price;
+        $trip->start_gps = $r->start_gps;
+        $trip->end_pgs = $r->end_pgs;
+        $trip->start_name = $r->start_name;
+        $trip->end_name = $r->end_name;
+
 
         try {
             $trip->save();
