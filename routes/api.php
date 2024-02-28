@@ -40,6 +40,7 @@ Route::middleware([JwtMiddleware::class])->group(function () {
     Route::POST("become-driver", [ApiAuthController::class, "become_driver"]);
     Route::get('api/{model}', [ApiResurceController::class, 'index']);
     Route::get('trips', [ApiResurceController::class, 'trips']);
+    Route::POST('get-available-trips', [ApiResurceController::class, 'get_available_trips']);
     Route::get('trips-bookings', [ApiResurceController::class, 'trips_bookings']);
     Route::POST("trips-create", [ApiAuthController::class, "trips_create"]);
     Route::POST("trips-bookings-create", [ApiAuthController::class, "trips_bookings_create"]);

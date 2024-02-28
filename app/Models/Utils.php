@@ -50,6 +50,57 @@ class Utils extends Model
     }
 
 
+    public static function get_available_trips(
+        $start_gps,
+        $end_pgps,
+        $date
+    ) {
+
+        $pending_trips = Trip::where([
+            'status' => 'Pending',
+        ])->orderBy('id', 'desc')
+            ->limit(1000)
+            ->get();
+        $trips_with_distance = [];
+        foreach ($pending_trips as $key => $value) {
+            $loc_1 = $value->start_gps;
+            $distance = self::haversineDistance($start_gps, $loc_1);
+            $value->distance = $distance;
+            $trips_with_distance[] = $value;
+        }
+
+        //sort trips by distance
+        usort($trips_with_distance, function ($a, $b) {
+            return $a->distance <=> $b->distance;
+        });
+
+        //get the first 50 trips
+        $trips_with_distance = array_slice($trips_with_distance, 0, 50);
+
+        $trips_with_destination_distance = [];
+        foreach ($trips_with_distance as $key => $value) {
+            $loc_1 = $value->end_pgs;
+            $distance = self::haversineDistance($end_pgps, $loc_1);
+            $value->destination_distance = $distance;
+            $trips_with_destination_distance[] = $value;
+        }
+
+        //sort trips by destination distance
+        usort($trips_with_destination_distance, function ($a, $b) {
+            return $a->destination_distance <=> $b->destination_distance;
+        });
+
+        //top 20
+        $trips_with_destination_distance = array_slice($trips_with_destination_distance, 0, 20);
+
+        //sort trips by distance
+       /*  usort($trips_with_destination_distance, function ($a, $b) {
+            return $a->distance <=> $b->distance;
+        }); */
+
+        return $trips_with_destination_distance;
+    }
+
     public static function haversineDistance($coord1, $coord2)
     {
         // Extract latitude and longitude from the coordinates

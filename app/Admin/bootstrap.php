@@ -23,13 +23,166 @@ use Encore\Admin\Facades\Admin;
 use Illuminate\Support\Facades\Auth;
 use App\Admin\Extensions\Nav\Shortcut;
 use App\Admin\Extensions\Nav\Dropdown;
+use App\Models\Trip;
 use App\Models\User;
+use Carbon\Carbon;
 
 //Utils::send_message('+256783204665','Hello from the other side');
 
 //generate a users
 
 $faker = Faker\Factory::create();
+
+/* foreach (Trip::all() as $key => $value) {
+    $value->end_time = [
+        'Personal Car',
+        'Taxi',
+    ][rand(0, 1)];
+    $value->save();
+    # code...
+} */
+
+/* $trips =  Utils::get_available_trips(
+    '2.9951839,34.0342128',
+    '-1.3359667,30.036886',
+    'Wakiso Central Market',
+); */
+
+/* 
+KOTIDO TO KABALE
+$trips =  Utils::get_available_trips(
+    '0.18753939663286798,30.089487733155256',
+    '1.8192,34.0789',
+    'Kotido, Uganda',
+);
+
+$trips =  Utils::get_available_trips(
+    '1.8192,34.0789',
+    '0.3564,32.5822',
+    'Kotido, Uganda',
+    'Kabale, Uganda'
+);
+
+*/
+
+die('done');
+
+
+/* $drivers = User::where('user_type', 'Driver')->get();
+$coordinatesArray = array(
+    array('latitude' => '0.3564', 'longitude' => '32.5822', 'address' => 'Wakiso Central Market'),
+    array('latitude' => '0.3448', 'longitude' => '32.5333', 'address' => 'Wakiso General Hospital'),
+    array('latitude' => '0.3365', 'longitude' => '32.5798', 'address' => 'Wakiso Main Street'),
+    array('latitude' => '0.3687', 'longitude' => '32.5221', 'address' => 'Wakiso Police Station'),
+    array('latitude' => '0.3722', 'longitude' => '32.5537', 'address' => 'Wakiso Stadium'),
+    array('latitude' => '0.3321', 'longitude' => '32.5954', 'address' => 'Wakiso University'),
+    array('latitude' => '0.3609', 'longitude' => '32.5659', 'address' => 'Wakiso Central Mosque'),
+    array('latitude' => '0.3437', 'longitude' => '32.5737', 'address' => 'Wakiso Arts and Culture Center'),
+    array('latitude' => '0.3492', 'longitude' => '32.5426', 'address' => 'Wakiso Public Library'),
+    array('latitude' => '0.3648', 'longitude' => '32.5752', 'address' => 'Wakiso Youth Center'),
+    array('latitude' => '0.3356', 'longitude' => '32.5367', 'address' => 'Wakiso Gardens'),
+    array('latitude' => '0.3592', 'longitude' => '32.5304', 'address' => 'Wakiso High School'),
+    array('latitude' => '0.3484', 'longitude' => '32.5618', 'address' => 'Wakiso Bus Terminal'),
+    array('latitude' => '0.3663', 'longitude' => '32.5828', 'address' => 'Wakiso Tech Hub'),
+    array('latitude' => '0.3337', 'longitude' => '32.5439', 'address' => 'Wakiso Cultural Village'),
+    array('latitude' => '0.3762', 'longitude' => '32.5496', 'address' => 'Wakiso International Airport'),
+    array('latitude' => '0.3546', 'longitude' => '32.5923', 'address' => 'Wakiso Community Hall'),
+    array('latitude' => '0.3678', 'longitude' => '32.5507', 'address' => 'Wakiso Waterfront'),
+    array('latitude' => '0.3391', 'longitude' => '32.5581', 'address' => 'Wakiso Cinema Plaza'),
+    array('latitude' => '0.3559', 'longitude' => '32.5687', 'address' => 'Wakiso Innovation Park')
+); */
+//tomorrow
+/* $t = strtotime('tomorrow'); */
+//format the date
+/* foreach ($coordinatesArray as $key => $code) {
+    $trip = new Trip();
+    $trip->driver_id = 2;
+    $trip->customer_id = 2;
+    $trip->start_stage_id = 1;
+    $trip->end_stage_id = 1;
+    $tomorrow = Carbon::now()->addDays(rand(1, 10))->format('Y-m-d H:i:s');
+    $trip->scheduled_start_time = $tomorrow;
+    $trip->scheduled_end_time = $tomorrow;
+    $trip->start_time = $tomorrow;
+    $trip->end_time = $tomorrow;
+    $trip->status = 'Pending';
+    $trip->vehicel_reg_number = [
+        'UAA 001A',
+        'UAA 002A',
+        'UAA 002A',
+        'UAA 003A',
+        'UAA 004A',
+        'UBA 001A',
+        'UBA 001A',
+        'UBA 002A',
+        'UBA 003A',
+        'UBA 004A',
+        'UBA 004A',
+        'UBB 001A',
+    ][rand(0, 8)];
+    $trip->slots = rand(1, 14);
+    $trip->price = [
+        2000, 3000, 4000, 5000, 6000, 7000, 8000, 9000, 10000, 15000, 20000, 25000, 30000, 35000, 40000, 45000, 50000
+    ][rand(0, 8)];
+    $trip->start_gps = $code['latitude'] . ',' . $code['longitude'];
+    $trip->end_pgs = null;
+    $trip->start_name = $code['address'];
+    $trip->end_name = null;
+    $trip->car_model = [
+        'Toyot TX',
+        'Nissan Xtrail',
+        'Toyota Prado',
+        'Toyota Landcruiser',
+        'Toyota Harrier',
+        'Toyota Ipsum',
+        'Toyota Noah',
+        'Toyota Wish',
+        'Toyota Rav4',
+        'Toyota Vitz',
+        'Toyota Premio',
+        'Toyota Mark X',
+        'Toyota Alphard',
+        'Toyota Hiace',
+        'Toyota Coaster',
+        'Toyota Super Custom',
+        'Toyota Hiace',
+        'Subaru Forester',
+        'Subaru Outback',
+        'Subaru Legacy',
+        'Subaru Impreza',
+        'Subaru XV',
+        'Land Rover Discovery',
+        'Land Rover Defender',
+        'Land Rover Freelander',
+        'Land Rover Range Rover',
+        'Audi Q7',
+        'Audi Q5',
+        'Ford Ranger',
+        'Ford Everest',
+    ][rand(0, 29)];
+    $trip->start_address = $code['address'];
+    $trip->end_address = null;
+    $trip->save();
+}
+ */
+
+/* $trips = Trip::all();
+$trips_array = [];
+foreach ($trips as $key => $trip) {
+    $trips_array[] = $trip->id;
+}
+foreach ($trips as $key => $t) {
+    shuffle($trips_array);
+    $t2 = Trip::find($trips_array[0]);
+    $t->end_pgs = $t2->start_gps;
+    $t->end_name = $t2->start_name;
+    $t->end_name = $t2->start_address;
+    $t->end_address = $t2->start_address;
+    $t->details = 'This trip is from ' . $t->start_name . ' to ' . $t->end_name. ', at a cost of ' . $t->price . ' UGX';
+    $t->save();
+}  
+
+die('done'); 
 
 
 $coordinates = array(
@@ -137,7 +290,7 @@ $coordinates = array(
 
 // Example usage
 $my_coord = "0.302258,32.609356";
-
+ */
 
 /* foreach (User::all() as $key => $value) {
     $value->phone_number = str_replace('+255', '+25', $value->phone_number);

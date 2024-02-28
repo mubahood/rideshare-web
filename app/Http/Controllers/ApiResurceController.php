@@ -566,6 +566,21 @@ class ApiResurceController extends Controller
     {
         return $this->success(Trip::where([])->orderby('id', 'desc')->get(), 'Success');
     }
+
+    public function get_available_trips(Request $r)
+    {
+        if ($r->start_gps == null || $r->end_gps == null) {
+            return $this->error('Start and end GPS coordinates are required.');
+        }
+        $trips = Utils::get_available_trips(
+            $r->start_gps,
+            $r->end_gps,
+            null,
+        );
+        return $this->success($trips, 'Success');
+    }
+
+
     public function trips_bookings()
     {
         $u = auth('api')->user();
