@@ -65,7 +65,7 @@ $trips =  Utils::get_available_trips(
 
 */
 
-die('done');
+//die('done');
 
 
 /* $drivers = User::where('user_type', 'Driver')->get();
