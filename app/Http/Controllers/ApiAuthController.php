@@ -423,6 +423,8 @@ class ApiAuthController extends Controller
         if ($admin == null) {
             return $this->error('User not found.');
         }
+        
+        // Validate required fields
         if ($r->driving_license_number == null) {
             return $this->error('Driving license number is required.');
         }
@@ -436,19 +438,67 @@ class ApiAuthController extends Controller
             return $this->error('Driving license issue authority is required.');
         }
         if ($r->nin == null) {
-            return $this->error('Driving license photo is required.');
+            return $this->error('National ID number is required.');
         }
         if ($r->automobile == null) {
             return $this->error('Automobile not specified, download the new app update and try again.');
         }
+
+        // Validate that at least one service is selected
+        $services = ['car', 'boda', 'ambulance', 'police', 'delivery', 'breakdown', 'firebrugade'];
+        $hasService = false;
+        foreach ($services as $service) {
+            if ($r->input("is_{$service}") === 'Yes') {
+                $hasService = true;
+                break;
+            }
+        }
+        
+        if (!$hasService) {
+            return $this->error('Please select at least one service you want to provide.');
+        }
+
+        // Update basic driver information
         $admin->driving_license_number = $r->driving_license_number;
         $admin->nin = $r->nin;
-        $admin->driving_license_number = $r->driving_license_number;
         $admin->driving_license_issue_date = Carbon::parse($r->driving_license_issue_date);
         $admin->driving_license_validity = Carbon::parse($r->driving_license_validity);
         $admin->driving_license_issue_authority = $r->driving_license_issue_authority;
         $admin->automobile = $r->automobile;
 
+        // Update personal information if provided
+        if ($r->first_name) {
+            $admin->first_name = $r->first_name;
+        }
+        if ($r->last_name) {
+            $admin->last_name = $r->last_name;
+        }
+        if ($r->first_name && $r->last_name) {
+            $admin->name = $r->first_name . ' ' . $r->last_name;
+        }
+        if ($r->date_of_birth) {
+            $admin->date_of_birth = Carbon::parse($r->date_of_birth);
+        }
+        if ($r->home_address) {
+            $admin->home_address = $r->home_address;
+        }
+
+        // Update service selections
+        foreach ($services as $service) {
+            $serviceField = "is_{$service}";
+            $approvalField = "is_{$service}_approved";
+            
+            $admin->$serviceField = $r->input($serviceField, 'No');
+            
+            // Reset approval status when service selection changes
+            if ($admin->$serviceField === 'Yes') {
+                $admin->$approvalField = 'No'; // Will be approved by admin later
+            } else {
+                $admin->$approvalField = 'No';
+            }
+        }
+
+        // Handle file upload for driving license photo
         $image = Utils::upload_images_1($_FILES, true);
         if ($image != null) {
             if (strlen($image) > 3) {
@@ -456,11 +506,21 @@ class ApiAuthController extends Controller
             }
         }
 
-
-        $admin->status = 2;
+        // Update status and user type
+        $admin->status = 2; // Pending approval
         $admin->user_type = 'Pending Driver';
         $admin->save();
-        return $this->success($admin, $message = "Driver request submitted successfully.", 200);
+
+        // Prepare response data with service information
+        $responseData = $admin->toArray();
+        $responseData['requested_services'] = [];
+        foreach ($services as $service) {
+            if ($admin->{"is_{$service}"} === 'Yes') {
+                $responseData['requested_services'][] = $service;
+            }
+        }
+
+        return $this->success($responseData, "Driver request submitted successfully. Your application will be reviewed for the selected services.", 200);
     }
 
 
@@ -470,67 +530,64 @@ class ApiAuthController extends Controller
     public function login(Request $r)
     {
         if ($r->username == null) {
-            return $this->error('Username is required.');
+            return $this->error('Email or phone number is required.');
         }
 
         if ($r->password == null) {
             return $this->error('Password is required.');
         }
 
-        $r->username = trim($r->username);
+        $identifier = trim($r->username);
+        $password = trim($r->password);
 
-        $u = User::where('phone_number_1', $r->username)
-            ->orWhere('phone_number_2', $r->username)
-            ->orWhere('username', $r->username)
-            ->orWhere('id', $r->username)
-            ->orWhere('email', $r->username)
+        // Find user by email, phone number, or username
+        $u = User::where('email', $identifier)
+            ->orWhere('phone_number', $identifier)
+            ->orWhere('phone_number', $identifier)
+            ->orWhere('phone_number_2', $identifier)
+            ->orWhere('username', $identifier)
+            ->orWhere('id', $identifier)
             ->first();
-        if (str_contains($phone_number, '783204')) {
-            //is testing account
-            $u->status = 1;
-            $u->password = password_hash('1234', PASSWORD_DEFAULT);
-            $u->otp = '1234';
-        } else {
-            $resp = Utils::send_otp($u);
-        }
 
-
-
+        // If not found in User model, try Administrator model
         if ($u == null) {
-
-            $phone_number = Utils::prepare_phone_number($r->username);
-
-            if (Utils::phone_number_is_valid($phone_number)) {
-                $phone_number = $r->phone_number;
-
-                $u = User::where('phone_number', $phone_number)
-                    ->orWhere('username', $phone_number)
-                    ->orWhere('email', $phone_number)
-                    ->first();
-            }
+            $u = Administrator::where('email', $identifier)
+                ->orWhere('phone_number', $identifier)
+                ->orWhere('username', $identifier)
+                ->orWhere('id', $identifier)
+                ->first();
         }
 
         if ($u == null) {
             return $this->error('User account not found.');
         }
 
+        // Verify password
+        if (!password_verify($password, $u->password)) {
+            return $this->error('Invalid password.');
+        }
 
+        // Check if account is active
+        if ($u->status != 1) {
+            return $this->error('Your account is not active. Please contact support.');
+        }
+
+        // Generate JWT token
         JWTAuth::factory()->setTTL(60 * 24 * 30 * 365);
 
         $token = auth('api')->attempt([
             'id' => $u->id,
-            'password' => trim($r->password),
+            'password' => $password,
         ]);
 
-
         if ($token == null) {
-            return $this->error('Wrong credentials.');
+            return $this->error('Authentication failed. Please try again.');
         }
-
-
 
         $u->token = $token;
         $u->remember_token = $token;
+        $u->updated_at = Carbon::now()->format('Y-m-d H:i:s');
+        $u->save();
 
         return $this->success($u, 'Logged in successfully.');
     }
@@ -552,61 +609,69 @@ class ApiAuthController extends Controller
         if ($r->gender == null) {
             return $this->error('Gender is required.');
         }
+        
+        // Password validation
+        if ($r->password == null) {
+            return $this->error('Password is required.');
+        }
+        
+        if (strlen(trim($r->password)) < 6) {
+            return $this->error('Password must be at least 6 characters long.');
+        }
 
+        // Email validation (optional but if provided should be valid)
+        if ($r->email != null) {
+            $email = trim($r->email);
+            if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+                return $this->error('Invalid email address.');
+            }
+            
+            // Check if email already exists
+            $existing_email = Administrator::where('email', $email)->first();
+            if ($existing_email != null) {
+                return $this->error('Email address already exists.');
+            }
+        }
+
+        // Check if user already exists
         $u = Administrator::where('phone_number', $phone_number)
             ->orWhere('username', $phone_number)->first();
         if ($u != null) {
-            $u->phone_number = $phone_number;
-
-            if (str_contains($phone_number, '783204')) {
-                //is testing account
-                $u->status = 1;
-                $u->password = password_hash('1234', PASSWORD_DEFAULT);
-                $u->otp = '1234';
-                $u->save();
-                return $this->success($u, 'Testing account created successfully. Verification code sent to your phone number.');
-            } else {
-                $resp = Utils::send_otp($u);
-            }
-
-
-            if (strlen($resp) > 0) {
-                return $this->error($resp);
-            }
-            return $this->success($u, 'Verification code sent to your phone number.');
+            return $this->error('Phone number already registered. Please sign in instead.');
         }
 
+        // Create new user
         $user = new Administrator();
         $user->first_name = trim($r->first_name);
         $user->last_name = trim($r->last_name);
         $user->sex = trim($r->gender);
         $user->username = $phone_number;
+        $user->phone_number = $phone_number;
         $user->name = trim($r->first_name) . " " . trim($r->last_name);
-        $user->password = '4321';
+        $user->password = password_hash(trim($r->password), PASSWORD_DEFAULT);
+        $user->email = $r->email ? trim($r->email) : null;
+        $user->status = 1; // Active status
+        $user->user_type = 'customer'; // Default user type
 
-        $user->status = 1;
         if (!$user->save()) {
             return $this->error('Failed to create account. Please try again.');
         }
 
-        $new_user = Administrator::find($user->id);
-        if ($new_user == null) {
-            return $this->error('Account created successfully but failed to log you in.');
-        }
-        /* Config::set('jwt.ttl', 60 * 24 * 30 * 365);
+        // Generate JWT token for immediate login
+        JWTAuth::factory()->setTTL(60 * 24 * 30 * 365);
 
         $token = auth('api')->attempt([
-            'username' => $phone_number,
+            'id' => $user->id,
             'password' => trim($r->password),
-        ]); */
-        if ($new_user != null) {
-            $resp = Utils::send_otp($new_user);
-            if (strlen($resp) > 0) {
-                return $this->error($resp);
-            }
-            return $this->success($new_user, 'Account created successfully. Verification code sent to your phone number.');
-        } else {
-            return $this->error('Account created successfully but failed to log you in.');
+        ]);
+
+        if ($token == null) {
+            return $this->error('Account created but failed to log in automatically. Please sign in manually.');
         }
+
+        $user->token = $token;
+        $user->remember_token = $token;
+
+        return $this->success($user, 'Account created and logged in successfully.');
     }
 }

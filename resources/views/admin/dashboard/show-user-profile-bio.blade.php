@@ -13,7 +13,7 @@
         <p class="mb-2 mb-md-3 item"><b>Sex:</b> {{ $u->sex }}</p>
         <p class="mb-2 mb-md-3 item"><b>Home address:</b> {{ $u->home_address }}</p>
         <p class="mb-2 mb-md-3 item"><b>Current address:</b> {{ $u->current_address }}</p>
-        <p class="mb-2 mb-md-3 item"><b>Phone number 1:</b> {{ $u->phone_number_1 }}</p>
+        <p class="mb-2 mb-md-3 item"><b>Phone number 1:</b> {{ $u->phone_number }}</p>
         <p class="mb-2 mb-md-3 item"><b>Phone number 2:</b> {{ $u->phone_number_2 }}</p>
         <p class="mb-2 mb-md-3 item"><b>Nationality:</b> {{ $u->nationality }}</p>
         <p class="mb-2 mb-md-3 item"><b>Religion:</b> {{ $u->religion }}</p>

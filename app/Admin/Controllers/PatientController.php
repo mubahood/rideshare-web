@@ -54,7 +54,7 @@ class PatientController extends AdminController
             ])
             ->sortable();
         $grid->column('date_of_birth', __('D.O.B'))->sortable();
-        $grid->column('phone_number_1', __('Phone Number'));
+        $grid->column('phone_number', __('Phone Number'));
         $grid->column('phone_number_2', __('Phone number 2'))->hide();
         $grid->column('email', __('Email'))->hide();
         $grid->column('occupation', __('Occupation'));
@@ -91,7 +91,7 @@ class PatientController extends AdminController
         $show->field('last_name', __('Last name'));
         $show->field('gender', __('Gender'));
         $show->field('date_of_birth', __('Date of birth'));
-        $show->field('phone_number_1', __('Phone number 1'));
+        $show->field('phone_number', __('Phone number 1'));
         $show->field('phone_number_2', __('Phone number 2'));
         $show->field('email', __('Email'));
         $show->field('occupation', __('Occupation'));
@@ -122,7 +122,7 @@ class PatientController extends AdminController
             ])
             ->rules('required');
         $form->date('date_of_birth', __('Date of birth'));
-        $form->text('phone_number_1', __('Phone number'))->rules('required');
+        $form->text('phone_number', __('Phone number'))->rules('required');
         $form->text('phone_number_2', __('Phone number 2'));
         $form->email('email', __('Email'));
         $form->text('occupation', __('Occupation'));

@@ -59,7 +59,7 @@ class Trip extends Model
     {
         $driver = Administrator::find($this->driver_id);
         if ($driver) {
-            return $driver->phone_number_1;
+            return $driver->phone_number;
         }
         return "-";
     }

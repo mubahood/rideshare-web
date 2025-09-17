@@ -13,9 +13,10 @@ use Illuminate\Support\Facades\Route;
 
 Route::POST("users/login", [ApiAuthController::class, "login"]);
 Route::POST("users/register", [ApiAuthController::class, "register"]);
-Route::POST("otp-verify", [ApiResurceController::class, "otp_verify"]);
-Route::POST("otp-request", [ApiResurceController::class, "otp_request"]);
-Route::get("otp-request", [ApiResurceController::class, "otp_request"]);
+// OTP routes disabled for password-based authentication
+// Route::POST("otp-verify", [ApiResurceController::class, "otp_verify"]);
+// Route::POST("otp-request", [ApiResurceController::class, "otp_request"]);
+// Route::get("otp-request", [ApiResurceController::class, "otp_request"]);
 
 Route::middleware([JwtMiddleware::class])->group(function () {
     Route::get('route-stages', [ApiResurceController::class, 'route_stages']);

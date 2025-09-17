@@ -17,7 +17,7 @@ class Patient extends Model
         $patients = Patient::all();
         $patients_array = [];
         foreach ($patients as $patient) {
-            $patients_array[$patient->id] = $patient->first_name . ' ' . $patient->last_name . " - " . $patient->phone_number_1;
+            $patients_array[$patient->id] = $patient->first_name . ' ' . $patient->last_name . " - " . $patient->phone_number;
         }
         return $patients_array;
     }

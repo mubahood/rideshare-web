@@ -699,6 +699,7 @@ class Utils extends Model
 
     public static function docs_root()
     {
+        return base_path('public');
         $r = $_SERVER['DOCUMENT_ROOT'] . "";
 
         if (!str_contains($r, 'home/')) {
