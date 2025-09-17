@@ -584,7 +584,6 @@ class ApiAuthController extends Controller
             return $this->error('Authentication failed. Please try again.');
         }
 
-        $u->token = $token;
         $u->remember_token = $token;
         $u->updated_at = Carbon::now()->format('Y-m-d H:i:s');
         $u->save();
@@ -669,7 +668,6 @@ class ApiAuthController extends Controller
             return $this->error('Account created but failed to log in automatically. Please sign in manually.');
         }
 
-        $user->token = $token;
         $user->remember_token = $token;
 
         return $this->success($user, 'Account created and logged in successfully.');

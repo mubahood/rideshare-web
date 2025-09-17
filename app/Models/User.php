@@ -78,6 +78,15 @@ class User extends Authenticatable implements JWTSubject
     ];
 
     /**
+     * The accessors to append to the model's array form.
+     *
+     * @var array
+     */
+    protected $appends = [
+        'token',
+    ];
+
+    /**
      * The attributes that should be cast.
      *
      * @var array<string, string>
@@ -97,6 +106,14 @@ class User extends Authenticatable implements JWTSubject
     public function getJWTCustomClaims()
     {
         return [];
+    }
+
+    /**
+     * Token accessor - returns remember_token for API compatibility
+     */
+    public function getTokenAttribute()
+    {
+        return $this->remember_token;
     }
 
     /**

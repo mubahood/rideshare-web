@@ -332,13 +332,27 @@ class EmployeesController extends AdminController
                 $form->divider('REQUESTED SERVICES');
                 
                 // Show individual service request status as read-only fields
-                $form->display('is_car', 'Car Service Requested');
-                $form->display('is_boda', 'Boda Service Requested');
-                $form->display('is_ambulance', 'Ambulance Service Requested');
-                $form->display('is_police', 'Police Service Requested');
-                $form->display('is_delivery', 'Delivery Service Requested');
-                $form->display('is_breakdown', 'Breakdown Service Requested');
-                $form->display('is_firebrugade', 'Fire Brigade Service Requested');
+                $form->radio('is_car', 'Car Service Requested')
+                    ->options(['Yes' => 'Yes', 'No' => 'No'])
+                    ->default('No');
+                $form->radio('is_boda', 'Boda Service Requested')
+                    ->options(['Yes' => 'Yes', 'No' => 'No'])
+                    ->default('No');
+                $form->radio('is_ambulance', 'Ambulance Service Requested')
+                    ->options(['Yes' => 'Yes', 'No' => 'No'])
+                    ->default('No');
+                $form->radio('is_police', 'Police Service Requested')
+                    ->options(['Yes' => 'Yes', 'No' => 'No'])
+                    ->default('No');
+                $form->radio('is_delivery', 'Delivery Service Requested')
+                    ->options(['Yes' => 'Yes', 'No' => 'No'])
+                    ->default('No');
+                $form->radio('is_breakdown', 'Breakdown Service Requested')
+                    ->options(['Yes' => 'Yes', 'No' => 'No'])
+                    ->default('No');
+                $form->radio('is_firebrugade', 'Fire Brigade Service Requested')
+                    ->options(['Yes' => 'Yes', 'No' => 'No'])
+                    ->default('No');
 
                 $form->divider('APPROVE SERVICES');
                 

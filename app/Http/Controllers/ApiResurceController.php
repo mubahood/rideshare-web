@@ -419,7 +419,6 @@ class ApiResurceController extends Controller
         if ($token == null) {
             return $this->error('Wrong credentials.');
         }
-        $u->token = $token;
         $u->remember_token = $token;
 
         return $this->success($u, 'Logged in successfully.');
