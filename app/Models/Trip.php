@@ -10,6 +10,44 @@ class Trip extends Model
 {
     use HasFactory;
 
+    /**
+     * The attributes that are mass assignable.
+     */
+    protected $fillable = [
+        'driver_id',
+        'customer_id', 
+        'start_stage_id',
+        'end_stage_id',
+        'scheduled_start_time',
+        'scheduled_end_time', 
+        'start_time',
+        'end_time',
+        'status',
+        'vehicel_reg_number',
+        'slots', // Add slots to fillable array
+        'details',
+        'car_model',
+        'price',
+        'start_gps',
+        'end_pgs',
+        'start_name',
+        'end_name',
+        'start_address',
+        'end_address',
+    ];
+
+    /**
+     * The attributes that should be cast.
+     */
+    protected $casts = [
+        'slots' => 'integer', // Ensure slots is cast as integer
+        'price' => 'decimal:2',
+        'scheduled_start_time' => 'datetime',
+        'scheduled_end_time' => 'datetime',
+        'start_time' => 'datetime',
+        'end_time' => 'datetime',
+    ];
+
     //boot
     protected static function boot()
     {

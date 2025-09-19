@@ -629,6 +629,7 @@ class ComposerStaticInitda89eef54c810448a827ed04bb3da82f
         'App\\Admin\\Controllers\\EventController' => __DIR__ . '/../..' . '/app/Admin/Controllers/EventController.php',
         'App\\Admin\\Controllers\\GenController' => __DIR__ . '/../..' . '/app/Admin/Controllers/GenController.php',
         'App\\Admin\\Controllers\\HomeController' => __DIR__ . '/../..' . '/app/Admin/Controllers/HomeController.php',
+        'App\\Admin\\Controllers\\NegotiationController' => __DIR__ . '/../..' . '/app/Admin/Controllers/NegotiationController.php',
         'App\\Admin\\Controllers\\PatientController' => __DIR__ . '/../..' . '/app/Admin/Controllers/PatientController.php',
         'App\\Admin\\Controllers\\PatientRecordController' => __DIR__ . '/../..' . '/app/Admin/Controllers/PatientRecordController.php',
         'App\\Admin\\Controllers\\ProjectController' => __DIR__ . '/../..' . '/app/Admin/Controllers/ProjectController.php',

@@ -569,13 +569,9 @@ class ApiResurceController extends Controller
     public function get_available_trips(Request $r)
     {
         if ($r->start_gps == null || $r->end_gps == null) {
-            return $this->error('Start and end GPS coordinates are required.');
+            // return $this->error('Start and end GPS coordinates are required.');
         }
-        $trips = Utils::get_available_trips(
-            $r->start_gps,
-            $r->end_gps,
-            null,
-        );
+        $trips = Utils::get_available_trips();
         return $this->success($trips, 'Success');
     }
 

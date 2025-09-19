@@ -46,6 +46,11 @@ Route::middleware([JwtMiddleware::class])->group(function () {
     Route::POST("trips-create", [ApiAuthController::class, "trips_create"]);
     Route::POST("trips-bookings-create", [ApiAuthController::class, "trips_bookings_create"]);
     Route::POST("trips-bookings-update", [ApiAuthController::class, "trips_bookings_update"]);
+    Route::POST("trips-update", [ApiAuthController::class, "trips_update"]);
+    Route::POST("trips-update-detailed", [ApiAuthController::class, "trips_update_detailed"]);
+    Route::get("trips-driver-bookings", [ApiAuthController::class, "trips_driver_bookings"]);
+    Route::POST("trips-booking-status-update", [ApiAuthController::class, "trips_booking_status_update"]);
+    Route::get("trips-my-driver-trips", [ApiAuthController::class, "trips_my_driver_trips"]);
     Route::POST("trips-initiate", [ApiAuthController::class, "trips_initiate"]);
     Route::POST("go-on-off", [ApiAuthController::class, "go_on_off"]);
     Route::POST("negotiation-updates", [ApiAuthController::class, "negotiation_updates"]);

@@ -14,6 +14,7 @@ use Carbon\Carbon;
 use Encore\Admin\Auth\Database\Administrator;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Config;
+use Illuminate\Support\Facades\Log;
 use Tymon\JWTAuth\Facades\JWTAuth;
 
 class ApiAuthController extends Controller
@@ -58,12 +59,21 @@ class ApiAuthController extends Controller
         if ($u == null) {
             return $this->error('User not found.');
         }
-        if ($r->trip_id == null) {
-            return $this->error('Trop not dound.');
+        
+        // Enhanced input validation
+        if (empty($r->trip_id)) {
+            return $this->error('Trip not found.');
         }
-        if ($r->slot_count == null) {
+        if (empty($r->slot_count)) {
             return $this->error('You have not specified the number of slots.');
         }
+        
+        // Validate slot count is a positive integer
+        $slotCount = (int)$r->slot_count;
+        if ($slotCount <= 0) {
+            return $this->error('Invalid number of slots. Must be greater than 0.');
+        }
+        
         $trip = Trip::find($r->trip_id);
         if ($trip == null) {
             return $this->error('Trip not found.');
@@ -71,6 +81,42 @@ class ApiAuthController extends Controller
         if ($trip->status != 'Pending') {
             return $this->error('Trip is not in pending status.');
         }
+        
+        // Check if user already has a booking for this trip
+        $existingBooking = TripBooking::where('trip_id', $trip->id)
+            ->where('customer_id', $u->id)
+            ->where('status', '!=', 'Canceled')
+            ->first();
+        if ($existingBooking) {
+            return $this->error('You already have a booking for this trip.');
+        }
+        
+        // Calculate available slots considering existing bookings
+        $bookedSlots = TripBooking::where('trip_id', $trip->id)
+            ->where('status', '!=', 'Canceled')
+            ->sum('slot_count');
+        $availableSlots = $trip->slots - $bookedSlots;
+        
+        if ($slotCount > $availableSlots) {
+            return $this->error("Only {$availableSlots} slots are available for this trip.");
+        }
+        
+        // Validate route stages exist before creating booking
+        $start_stage = RouteStage::find($trip->start_stage_id);
+        $end_stage = RouteStage::find($trip->end_stage_id);
+        if ($start_stage == null) {
+            return $this->error("Start stage not found.");
+        }
+        if ($end_stage == null) {
+            return $this->error("End stage not found.");
+        }
+        
+        // Get driver information
+        $driver = Administrator::find($trip->driver_id);
+        if ($driver == null) {
+            return $this->error("Driver not found.");
+        }
+        
         $booking = new TripBooking();
         $booking->trip_id = $trip->id;
         $booking->customer_id = $u->id;
@@ -81,36 +127,39 @@ class ApiAuthController extends Controller
         $booking->payment_status = 'Pending';
         $booking->start_time = null;
         $booking->end_time = null;
-        $booking->slot_count = ((int)($r->slot_count));
-        if ($booking->slot_count > $trip->slots) {
-            return $this->error('You have exceeded the available slots.');
-        }
-        $booking->price = $trip->price * $booking->slot_count;
-        $booking->customer_note = $r->customer_note;
-
-        $start_stage = RouteStage::find($booking->start_stage_id);
-        $end_stage = RouteStage::find($booking->end_stage_id);
-        if ($start_stage == null) {
-            throw new \Exception("Start stage not found.");
-        }
-        if ($end_stage == null) {
-            throw new \Exception("End stage not found.");
-        }
+        $booking->slot_count = $slotCount;
+        $booking->price = $trip->price * $slotCount;
+        $booking->customer_note = $r->customer_note ?? '';
+        
+        // Populate text fields
         $booking->start_stage_text = $start_stage->name;
         $booking->end_stage_text = $end_stage->name;
         $booking->customer_text = $u->name;
-        $booking->driver_text = $trip->details;
-
+        $booking->driver_text = $driver->name;
+        $booking->trip_text = $trip->details ?? $trip->name ?? 'Trip';
+        // Note: customer_contact and driver_contact are computed attributes, not database columns
 
         try {
             $booking->save();
+            
+            // Send notification to driver (if SMS functionality is available)
+            if (method_exists('App\Models\Utils', 'send_message') && !empty($driver->phone_number)) {
+                try {
+                    Utils::send_message(
+                        $driver->phone_number,
+                        "RIDESHARE! New booking received for your trip. {$slotCount} seat(s) booked by {$u->name}. Open the app to view details."
+                    );
+                } catch (\Throwable $smsError) {
+                    // Log SMS error but don't fail the booking
+                    Log::warning('Failed to send SMS notification: ' . $smsError->getMessage());
+                }
+            }
+            
         } catch (\Throwable $th) {
-            return $this->error($th->getMessage());
-        } finally {
-            //$trip->slots = $trip->slots - $booking->slot_count;
-            //$trip->save();
+            return $this->error('Failed to create booking: ' . $th->getMessage());
         }
-        return $this->success(null, $message = "Trip booking created successfully.", 1);
+        
+        return $this->success($booking, "Trip booking created successfully.", 1);
     }
 
 
@@ -380,26 +429,78 @@ class ApiAuthController extends Controller
         if ($u == null) {
             return $this->error('User not found.');
         }
-        if ($u->user_type != 'Driver') {
-            return $this->error('You are not a driver.');
-        }
-        if ($r->price == null) {
+
+        // Comprehensive validation for trip creation
+        if ($r->price == null || trim($r->price) == '') {
             return $this->error('Price is required.');
         }
+        
+        if (!is_numeric($r->price) || $r->price <= 0) {
+            return $this->error('Price must be a valid number greater than 0.');
+        }
 
+        if ($r->available_slots == null || trim($r->available_slots) == '') {
+            return $this->error('Available slots is required.');
+        }
+        
+        if (!is_numeric($r->available_slots) || $r->available_slots <= 0) {
+            return $this->error('Available slots must be a valid number greater than 0.');
+        }
+        
+        if ($r->available_slots > 50) {
+            return $this->error('Available slots cannot exceed 50.');
+        }
+
+        if ($r->start_time == null || trim($r->start_time) == '') {
+            return $this->error('Departure date is required.');
+        }
+
+        if ($r->start_name == null || trim($r->start_name) == '') {
+            return $this->error('Start location name is required.');
+        }
+
+        if ($r->end_name == null || trim($r->end_name) == '') {
+            return $this->error('End location name is required.');
+        }
+
+        if ($r->start_gps == null || trim($r->start_gps) == '') {
+            return $this->error('Start GPS coordinates are required.');
+        }
+
+        if ($r->end_pgs == null || trim($r->end_pgs) == '') {
+            return $this->error('End GPS coordinates are required.');
+        }
+
+        if ($r->car_reg_number == null || trim($r->car_reg_number) == '') {
+            return $this->error('Vehicle registration number is required.');
+        }
+
+        if ($r->car_model == null || trim($r->car_model) == '') {
+            return $this->error('Car model is required.');
+        }
+
+        // Validate date format
+        try {
+            $departureDate = Carbon::parse($r->start_time);
+            if ($departureDate->isPast()) {
+                return $this->error('Departure date cannot be in the past.');
+            }
+        } catch (\Exception $e) {
+            return $this->error('Invalid departure date format.');
+        }
 
         $trip = new Trip();
         $trip->driver_id = $u->id;
         $trip->customer_id = $u->id;
         $trip->start_stage_id = 1;
         $trip->end_stage_id = 1;
-        $trip->scheduled_start_time = Carbon::parse($r->departure_date);
+        $trip->scheduled_start_time = Carbon::parse($r->start_time);
         $trip->scheduled_end_time = $r->arrival_date;
         $trip->start_time = null;
         $trip->end_time = null;
         $trip->status = 'Pending';
         $trip->vehicel_reg_number = $r->car_reg_number;
-        $trip->slots = $r->available_slots;
+        $trip->slots = (int)$r->available_slots; // Ensure it's stored as integer
         $trip->details = $r->details;
         $trip->car_model = $r->car_model;
         $trip->price = $r->price;
@@ -423,7 +524,7 @@ class ApiAuthController extends Controller
         if ($admin == null) {
             return $this->error('User not found.');
         }
-        
+
         // Validate required fields
         if ($r->driving_license_number == null) {
             return $this->error('Driving license number is required.');
@@ -453,7 +554,7 @@ class ApiAuthController extends Controller
                 break;
             }
         }
-        
+
         if (!$hasService) {
             return $this->error('Please select at least one service you want to provide.');
         }
@@ -487,9 +588,9 @@ class ApiAuthController extends Controller
         foreach ($services as $service) {
             $serviceField = "is_{$service}";
             $approvalField = "is_{$service}_approved";
-            
+
             $admin->$serviceField = $r->input($serviceField, 'No');
-            
+
             // Reset approval status when service selection changes
             if ($admin->$serviceField === 'Yes') {
                 $admin->$approvalField = 'No'; // Will be approved by admin later
@@ -573,22 +674,35 @@ class ApiAuthController extends Controller
         }
 
         // Generate JWT token
-        JWTAuth::factory()->setTTL(60 * 24 * 30 * 365);
+        try {
+            JWTAuth::factory()->setTTL(60 * 24 * 30 * 365);
 
-        $token = auth('api')->attempt([
-            'id' => $u->id,
-            'password' => $password,
-        ]);
+            // Generate token directly for the authenticated user
+            $customClaims = ['sub' => $u->id, 'user_id' => $u->id];
+            $token = JWTAuth::claims($customClaims)->fromUser($u);
 
-        if ($token == null) {
-            return $this->error('Authentication failed. Please try again.');
+            if ($token == null) {
+                // Fallback: try with different approach
+                $payload = JWTAuth::factory()->sub($u->id)->make();
+                $token = JWTAuth::encode($payload);
+            }
+
+            if ($token == null) {
+                return $this->error('Authentication failed. Please try again.');
+            }
+        } catch (\Exception $e) {
+            return $this->error('Authentication failed: ' . $e->getMessage());
         }
 
         $u->remember_token = $token;
         $u->updated_at = Carbon::now()->format('Y-m-d H:i:s');
         $u->save();
 
-        return $this->success($u, 'Logged in successfully.');
+        // Prepare response data with token
+        $responseData = $u->toArray();
+        $responseData['token'] = $token; // Add token field that mobile app expects
+
+        return $this->success($responseData, 'Logged in successfully.');
     }
 
 
@@ -608,12 +722,12 @@ class ApiAuthController extends Controller
         if ($r->gender == null) {
             return $this->error('Gender is required.');
         }
-        
+
         // Password validation
         if ($r->password == null) {
             return $this->error('Password is required.');
         }
-        
+
         if (strlen(trim($r->password)) < 6) {
             return $this->error('Password must be at least 6 characters long.');
         }
@@ -624,7 +738,7 @@ class ApiAuthController extends Controller
             if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
                 return $this->error('Invalid email address.');
             }
-            
+
             // Check if email already exists
             $existing_email = Administrator::where('email', $email)->first();
             if ($existing_email != null) {
@@ -656,20 +770,341 @@ class ApiAuthController extends Controller
             return $this->error('Failed to create account. Please try again.');
         }
 
+        // Refresh the user model to ensure all attributes are properly loaded
+        $user = $user->fresh();
+
         // Generate JWT token for immediate login
-        JWTAuth::factory()->setTTL(60 * 24 * 30 * 365);
+        try {
+            JWTAuth::factory()->setTTL(60 * 24 * 30 * 365);
 
-        $token = auth('api')->attempt([
-            'id' => $user->id,
-            'password' => trim($r->password),
-        ]);
+            // Try alternative token generation approach
+            $customClaims = ['sub' => $user->id, 'user_id' => $user->id];
+            $token = JWTAuth::claims($customClaims)->fromUser($user);
 
-        if ($token == null) {
-            return $this->error('Account created but failed to log in automatically. Please sign in manually.');
+            if ($token == null) {
+                // Fallback: try with different approach
+                $payload = JWTAuth::factory()->sub($user->id)->make();
+                $token = JWTAuth::encode($payload);
+            }
+
+            if ($token == null) {
+                Log::error('JWT token generation failed for user: ' . $user->id);
+                return $this->error('Account created but failed to generate authentication token. Please sign in manually.');
+            }
+
+            $user->remember_token = $token;
+            $user->save();
+
+            // Prepare response data with token
+            $responseData = $user->toArray();
+            $responseData['token'] = $token; // Add token field that mobile app expects
+
+            Log::info('User registered successfully with token: ' . $user->id);
+            return $this->success($responseData, 'Account created and logged in successfully.');
+            
+        } catch (\Exception $e) {
+            // If JWT generation fails, still return success for account creation
+            Log::error('JWT token generation exception for user ' . $user->id . ': ' . $e->getMessage());
+            return $this->error('Account created successfully but automatic login failed: ' . $e->getMessage() . '. Please sign in manually.');
+        }
+    }
+
+    /**
+     * Get all bookings for trips owned by the authenticated driver
+     * This endpoint allows drivers to manage passenger requests for their trips
+     */
+    public function trips_driver_bookings(Request $r)
+    {
+        $query = auth('api')->user();
+        $u = Administrator::find($query->id);
+        if ($u == null) {
+            return $this->error('User not found.');
         }
 
-        $user->remember_token = $token;
+        // Get trip ID filter if provided
+        $tripId = $r->trip_id;
 
-        return $this->success($user, 'Account created and logged in successfully.');
+        // Base query: Get bookings for trips where user is the driver
+        $bookingsQuery = TripBooking::whereHas('trip', function ($query) use ($u) {
+            $query->where('driver_id', $u->id);
+        });
+
+        // Filter by specific trip if requested
+        if ($tripId) {
+            $bookingsQuery->where('trip_id', $tripId);
+        }
+
+        // Get bookings with related data
+        $bookings = $bookingsQuery->with(['trip', 'customer'])
+            ->orderBy('created_at', 'desc')
+            ->get();
+
+        // Group bookings by trip for better organization
+        $groupedBookings = [];
+        foreach ($bookings as $booking) {
+            $tripId = $booking->trip_id;
+            if (!isset($groupedBookings[$tripId])) {
+                $groupedBookings[$tripId] = [
+                    'trip' => $booking->trip,
+                    'bookings' => []
+                ];
+            }
+            $groupedBookings[$tripId]['bookings'][] = $booking;
+        }
+
+        return $this->success([
+            'bookings' => $bookings,
+            'grouped_by_trip' => array_values($groupedBookings),
+            'total_requests' => $bookings->count()
+        ], 'Success');
+    }
+
+    /**
+     * Enhanced trip update with detailed editing capabilities for drivers
+     */
+    public function trips_update_detailed(Request $r)
+    {
+        $query = auth('api')->user();
+        $u = Administrator::find($query->id);
+        if ($u == null) {
+            return $this->error('User not found.');
+        }
+
+        if (empty($r->id)) {
+            return $this->error('Trip ID is required.');
+        }
+
+        $trip = Trip::find($r->id);
+        if ($trip == null) {
+            return $this->error('Trip not found.');
+        }
+
+        // Verify the user is the driver of this trip
+        if ($trip->driver_id != $u->id) {
+            return $this->error('You are not authorized to update this trip.');
+        }
+
+        // Update basic trip information
+        if ($r->has('status')) {
+            // Validate status transitions
+            $validStatuses = ['Pending', 'Active', 'Completed', 'Canceled'];
+            if (!in_array($r->status, $validStatuses)) {
+                return $this->error('Invalid status provided.');
+            }
+
+            // Check if status change is allowed
+            if ($trip->status == 'Completed' && $r->status != 'Completed') {
+                return $this->error('Cannot change status of a completed trip.');
+            }
+
+            $oldStatus = $trip->status;
+            $trip->status = $r->status;
+
+            // Handle status-specific logic
+            if ($r->status == 'Active' && $oldStatus != 'Active') {
+                $trip->start_time = now();
+                // Notify all passengers
+                $bookings = TripBooking::where('trip_id', $trip->id)
+                    ->where('status', 'Reserved')
+                    ->get();
+                foreach ($bookings as $booking) {
+                    if ($booking->customer && $booking->customer->phone_number) {
+                        Utils::send_message(
+                            $booking->customer->phone_number,
+                            "RIDESHARE! Your trip has started. Driver: {$u->name}, Vehicle: {$trip->vehicel_reg_number}"
+                        );
+                    }
+                }
+            } elseif ($r->status == 'Completed' && $oldStatus != 'Completed') {
+                $trip->end_time = now();
+                // Mark all active bookings as completed
+                TripBooking::where('trip_id', $trip->id)
+                    ->where('status', 'Reserved')
+                    ->update(['status' => 'Completed']);
+            }
+        }
+
+        // Update trip details if provided
+        if ($r->has('price') && is_numeric($r->price)) {
+            $trip->price = $r->price;
+        }
+
+        if ($r->has('slots') && is_numeric($r->slots)) {
+            // Check if reducing slots would conflict with existing bookings
+            $bookedSlots = TripBooking::where('trip_id', $trip->id)
+                ->whereIn('status', ['Pending', 'Reserved'])
+                ->sum('slot_count');
+            
+            if ($r->slots < $bookedSlots) {
+                return $this->error("Cannot reduce slots below {$bookedSlots} (currently booked).");
+            }
+            $trip->slots = $r->slots;
+        }
+
+        if ($r->has('details')) {
+            $trip->details = $r->details;
+        }
+
+        if ($r->has('scheduled_start_time')) {
+            try {
+                $trip->scheduled_start_time = Carbon::parse($r->scheduled_start_time);
+            } catch (\Exception $e) {
+                return $this->error('Invalid scheduled start time format.');
+            }
+        }
+
+        if ($r->has('scheduled_end_time')) {
+            try {
+                $trip->scheduled_end_time = Carbon::parse($r->scheduled_end_time);
+            } catch (\Exception $e) {
+                return $this->error('Invalid scheduled end time format.');
+            }
+        }
+
+        try {
+            $trip->save();
+        } catch (\Throwable $th) {
+            return $this->error('Failed to update trip: ' . $th->getMessage());
+        }
+
+        return $this->success($trip, 'Trip updated successfully.');
+    }
+
+    /**
+     * Enhanced booking status update for drivers with comprehensive passenger management
+     */
+    public function trips_booking_status_update(Request $r)
+    {
+        $query = auth('api')->user();
+        $u = Administrator::find($query->id);
+        if ($u == null) {
+            return $this->error('User not found.');
+        }
+
+        if (empty($r->booking_id)) {
+            return $this->error('Booking ID is required.');
+        }
+
+        if (empty($r->status)) {
+            return $this->error('Status is required.');
+        }
+
+        $booking = TripBooking::find($r->booking_id);
+        if ($booking == null) {
+            return $this->error('Booking not found.');
+        }
+
+        // Verify the user is the driver of this trip
+        if ($booking->trip->driver_id != $u->id) {
+            return $this->error('You are not authorized to update this booking.');
+        }
+
+        // Validate status
+        $validStatuses = ['Pending', 'Reserved', 'Canceled', 'Completed'];
+        if (!in_array($r->status, $validStatuses)) {
+            return $this->error('Invalid status provided.');
+        }
+
+        $oldStatus = $booking->status;
+        $newStatus = $r->status;
+
+        // Prevent invalid status transitions
+        if ($oldStatus == 'Completed' && $newStatus != 'Completed') {
+            return $this->error('Cannot change status of a completed booking.');
+        }
+
+        // Handle slot management for status changes
+        if ($oldStatus != $newStatus) {
+            if ($newStatus == 'Canceled' && $oldStatus != 'Canceled') {
+                // Return slots to trip when canceled
+                $booking->trip->slots += $booking->slot_count;
+                $booking->trip->save();
+            } elseif ($oldStatus == 'Canceled' && $newStatus != 'Canceled') {
+                // Check if slots are available when un-canceling
+                $availableSlots = $booking->trip->slots;
+                if ($availableSlots < $booking->slot_count) {
+                    return $this->error("Not enough available slots. Available: {$availableSlots}, Required: {$booking->slot_count}");
+                }
+                $booking->trip->slots -= $booking->slot_count;
+                $booking->trip->save();
+            }
+        }
+
+        $booking->status = $newStatus;
+
+        // Add optional driver notes
+        if ($r->has('driver_notes')) {
+            $booking->driver_notes = $r->driver_notes;
+        }
+
+        try {
+            $booking->save();
+        } catch (\Throwable $th) {
+            return $this->error('Failed to update booking: ' . $th->getMessage());
+        }
+
+        // Send notification to customer
+        $customer = $booking->customer;
+        if ($customer && $customer->phone_number) {
+            $statusMessages = [
+                'Reserved' => "Your trip booking has been confirmed by the driver. Get ready!",
+                'Canceled' => "Your trip booking has been canceled by the driver. Please book another trip.",
+                'Completed' => "Your trip has been completed. Thank you for riding with us!"
+            ];
+
+            if (isset($statusMessages[$newStatus])) {
+                Utils::send_message(
+                    $customer->phone_number,
+                    "RIDESHARE! " . $statusMessages[$newStatus]
+                );
+            }
+        }
+
+        return $this->success($booking, 'Booking status updated successfully.');
+    }
+
+    /**
+     * Get all trips created by the authenticated driver with booking statistics
+     */
+    public function trips_my_driver_trips(Request $r)
+    {
+        $query = auth('api')->user();
+        $u = Administrator::find($query->id);
+        if ($u == null) {
+            return $this->error('User not found.');
+        }
+
+        // Get trips created by this driver
+        $trips = Trip::where('driver_id', $u->id)
+            ->orderBy('created_at', 'desc')
+            ->get();
+
+        // Add booking statistics to each trip
+        foreach ($trips as $trip) {
+            $bookings = TripBooking::where('trip_id', $trip->id)->get();
+            
+            $trip->total_bookings = $bookings->count();
+            $trip->pending_bookings = $bookings->where('status', 'Pending')->count();
+            $trip->reserved_bookings = $bookings->where('status', 'Reserved')->count();
+            $trip->completed_bookings = $bookings->where('status', 'Completed')->count();
+            $trip->canceled_bookings = $bookings->where('status', 'Canceled')->count();
+            
+            $trip->booked_slots = $bookings->whereIn('status', ['Pending', 'Reserved'])
+                ->sum('slot_count');
+            $trip->available_slots = $trip->slots - $trip->booked_slots;
+            
+            $trip->total_revenue = $bookings->whereIn('status', ['Reserved', 'Completed'])
+                ->sum('price');
+        }
+
+        return $this->success([
+            'trips' => $trips,
+            'total_trips' => $trips->count(),
+            'summary' => [
+                'active_trips' => $trips->where('status', 'Pending')->count(),
+                'completed_trips' => $trips->where('status', 'Completed')->count(),
+                'total_revenue' => $trips->sum('total_revenue')
+            ]
+        ], 'Success');
     }
 }

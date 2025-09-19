@@ -15,6 +15,7 @@ return array(
     'App\\Admin\\Controllers\\EventController' => $baseDir . '/app/Admin/Controllers/EventController.php',
     'App\\Admin\\Controllers\\GenController' => $baseDir . '/app/Admin/Controllers/GenController.php',
     'App\\Admin\\Controllers\\HomeController' => $baseDir . '/app/Admin/Controllers/HomeController.php',
+    'App\\Admin\\Controllers\\NegotiationController' => $baseDir . '/app/Admin/Controllers/NegotiationController.php',
     'App\\Admin\\Controllers\\PatientController' => $baseDir . '/app/Admin/Controllers/PatientController.php',
     'App\\Admin\\Controllers\\PatientRecordController' => $baseDir . '/app/Admin/Controllers/PatientRecordController.php',
     'App\\Admin\\Controllers\\ProjectController' => $baseDir . '/app/Admin/Controllers/ProjectController.php',
