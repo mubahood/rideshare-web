@@ -59,6 +59,7 @@ return array(
     'App\\Http\\Controllers\\AccountController' => $baseDir . '/app/Http/Controllers/AccountController.php',
     'App\\Http\\Controllers\\ApiAuthController' => $baseDir . '/app/Http/Controllers/ApiAuthController.php',
     'App\\Http\\Controllers\\ApiChatController' => $baseDir . '/app/Http/Controllers/ApiChatController.php',
+    'App\\Http\\Controllers\\ApiNegotiationController' => $baseDir . '/app/Http/Controllers/ApiNegotiationController.php',
     'App\\Http\\Controllers\\ApiResurceController' => $baseDir . '/app/Http/Controllers/ApiResurceController.php',
     'App\\Http\\Controllers\\Controller' => $baseDir . '/app/Http/Controllers/Controller.php',
     'App\\Http\\Controllers\\MainController' => $baseDir . '/app/Http/Controllers/MainController.php',

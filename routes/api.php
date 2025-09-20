@@ -2,6 +2,8 @@
 
 use App\Http\Controllers\ApiAuthController;
 use App\Http\Controllers\ApiChatController;
+use App\Http\Controllers\ApiImportantContactsController;
+use App\Http\Controllers\ApiNegotiationController;
 use App\Http\Controllers\ApiResurceController;
 use App\Http\Middleware\EnsureTokenIsValid;
 use App\Http\Middleware\JwtMiddleware;
@@ -35,10 +37,29 @@ Route::middleware([JwtMiddleware::class])->group(function () {
     Route::post('negotiations-cancel', [ApiChatController::class, 'negotiations_cancel']); //==>2 
     Route::get('negotiations', [ApiChatController::class, 'negotiations']); //==>2 
     Route::get('negotiations-records', [ApiChatController::class, 'negotiations_records']); //==>2 
+
+    // Enhanced negotiation endpoints
+    Route::post('negotiations-create', [ApiNegotiationController::class, 'create']);
+    Route::post('negotiation-updates', [ApiNegotiationController::class, 'updates']);
+    Route::post('negotiations-cancel', [ApiNegotiationController::class, 'cancel']);
+    Route::get('negotiations-list', [ApiNegotiationController::class, 'index']);
+    Route::get('negotiations-test', [ApiNegotiationController::class, 'test']);
+    Route::post('negotiations-debug', [ApiNegotiationController::class, 'debugTest']);
     Route::post("trips-drivers", [ApiAuthController::class, "trips_drivers"]);
     Route::get("users/me", [ApiAuthController::class, "me"]);
     Route::get("users", [ApiAuthController::class, "users"]);
     Route::POST("become-driver", [ApiAuthController::class, "become_driver"]);
+    
+    // Important Contacts API routes
+    Route::get("important-contacts", [ApiImportantContactsController::class, "getImportantContacts"]);
+    Route::post("update-location", [ApiImportantContactsController::class, "updateLocation"]);
+    Route::get("contacts-statistics", [ApiImportantContactsController::class, "getStatistics"]);
+    
+    // Important Contacts API endpoints
+    Route::post('important-contacts', [App\Http\Controllers\ApiImportantContactsController::class, 'getImportantContacts']);
+    Route::post('important-contacts/update-location', [App\Http\Controllers\ApiImportantContactsController::class, 'updateLocation']);
+    Route::get('important-contacts/statistics', [App\Http\Controllers\ApiImportantContactsController::class, 'getStatistics']);
+    
     Route::get('api/{model}', [ApiResurceController::class, 'index']);
     Route::get('trips', [ApiResurceController::class, 'trips']);
     Route::POST('get-available-trips', [ApiResurceController::class, 'get_available_trips']);
@@ -63,7 +84,11 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 });
 
 Route::get('/user', function (Request $request) {
-    return 'Testing';
+    $user = $request->user();
+    if ($user == null) {
+        return 'No user';
+    }
+    return $user;
 });
 Route::get('/users', function (Request $request) {
     $conditions = [];

@@ -18,11 +18,6 @@ Route::group([
     $router->resource('employees', EmployeesController::class);
     $router->resource('users', EmployeesController::class);
     $router->resource('admin-roles', AdminRoleController::class);
-    $router->resource('projects', ProjectController::class);
-    $router->resource('project-sections', ProjectSectionController::class);
-    $router->resource('daily-tasks', TaskController::class);
-    $router->resource('weekly-tasks', TaskController::class);
-    $router->resource('montly-tasks', TaskController::class);
     $router->resource('tasks', TaskController::class);
     $router->resource('events', EventController::class);
     $router->get('/calendar', 'HomeController@calendar')->name('calendar');
@@ -33,5 +28,14 @@ Route::group([
     $router->resource('negotiations', NegotiationController::class);
 
     $router->resource('gens', GenController::class);
-    $router->resource('trips', TripController::class); 
+    $router->resource('trips', TripController::class);
+    
+    // Enhanced Employee Management Routes
+    $router->get('{id}/approve', 'EmployeesController@approve')->name('employees.approve');
+    $router->get('{id}/block', 'EmployeesController@block')->name('employees.block');
+    $router->get('{id}/activate', 'EmployeesController@activate')->name('employees.activate');
+    $router->get('{id}/approve-service/{service}', 'EmployeesController@approveService')->name('employees.approve-service');
+    $router->get('analytics', 'EmployeesController@analytics')->name('employees.analytics');
+    $router->get('reports', 'EmployeesController@reports')->name('employees.reports');
+    $router->get('bulk-operations', 'EmployeesController@bulkOperations')->name('employees.bulk-operations');
 });

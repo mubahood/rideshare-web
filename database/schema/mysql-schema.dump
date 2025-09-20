@@ -1,0 +1,725 @@
+/*!40103 SET @OLD_TIME_ZONE=@@TIME_ZONE */;
+/*!40103 SET TIME_ZONE='+00:00' */;
+/*!40014 SET @OLD_UNIQUE_CHECKS=@@UNIQUE_CHECKS, UNIQUE_CHECKS=0 */;
+/*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */;
+/*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
+/*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
+DROP TABLE IF EXISTS `admin_menu`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `admin_menu` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `parent_id` int(11) NOT NULL DEFAULT '0',
+  `order` int(11) NOT NULL DEFAULT '0',
+  `title` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `icon` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `uri` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `permission` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+DROP TABLE IF EXISTS `admin_operation_log`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `admin_operation_log` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `user_id` int(11) NOT NULL,
+  `path` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `method` varchar(10) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `ip` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `input` text COLLATE utf8mb4_unicode_ci NOT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `admin_operation_log_user_id_index` (`user_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+DROP TABLE IF EXISTS `admin_permissions`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `admin_permissions` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `name` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `slug` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `http_method` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `http_path` text COLLATE utf8mb4_unicode_ci,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `admin_permissions_name_unique` (`name`),
+  UNIQUE KEY `admin_permissions_slug_unique` (`slug`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+DROP TABLE IF EXISTS `admin_role_menu`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `admin_role_menu` (
+  `role_id` int(11) NOT NULL,
+  `menu_id` int(11) NOT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL,
+  KEY `admin_role_menu_role_id_menu_id_index` (`role_id`,`menu_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+DROP TABLE IF EXISTS `admin_role_permissions`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `admin_role_permissions` (
+  `role_id` int(11) NOT NULL,
+  `permission_id` int(11) NOT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL,
+  KEY `admin_role_permissions_role_id_permission_id_index` (`role_id`,`permission_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+DROP TABLE IF EXISTS `admin_role_users`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `admin_role_users` (
+  `role_id` int(11) NOT NULL,
+  `user_id` int(11) NOT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL,
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  PRIMARY KEY (`id`),
+  KEY `admin_role_users_role_id_user_id_index` (`role_id`,`user_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+DROP TABLE IF EXISTS `admin_roles`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `admin_roles` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `name` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `slug` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL,
+  `company_id` int(11) DEFAULT '1',
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `admin_roles_slug_unique` (`slug`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+DROP TABLE IF EXISTS `admin_user_permissions`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `admin_user_permissions` (
+  `user_id` int(11) NOT NULL,
+  `permission_id` int(11) NOT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL,
+  KEY `admin_user_permissions_user_id_permission_id_index` (`user_id`,`permission_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+DROP TABLE IF EXISTS `admin_users`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `admin_users` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `username` varchar(500) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `password` varchar(500) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `name` varchar(500) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `avatar` varchar(10000) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `remember_token` varchar(1000) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL,
+  `enterprise_id` int(11) NOT NULL DEFAULT '1',
+  `first_name` text COLLATE utf8mb4_unicode_ci,
+  `last_name` text COLLATE utf8mb4_unicode_ci,
+  `date_of_birth` text COLLATE utf8mb4_unicode_ci,
+  `place_of_birth` text COLLATE utf8mb4_unicode_ci,
+  `sex` text COLLATE utf8mb4_unicode_ci,
+  `home_address` text COLLATE utf8mb4_unicode_ci,
+  `current_address` text COLLATE utf8mb4_unicode_ci,
+  `phone_number` text COLLATE utf8mb4_unicode_ci,
+  `phone_number_2` text COLLATE utf8mb4_unicode_ci,
+  `email` text COLLATE utf8mb4_unicode_ci,
+  `user_type` varchar(25) COLLATE utf8mb4_unicode_ci DEFAULT 'employee',
+  `deleted_at` date DEFAULT NULL,
+  `status` int(11) DEFAULT '2',
+  `otp` bigint(20) DEFAULT NULL,
+  `nin` text COLLATE utf8mb4_unicode_ci,
+  `driving_license_number` text COLLATE utf8mb4_unicode_ci,
+  `driving_license_issue_date` text COLLATE utf8mb4_unicode_ci,
+  `driving_license_validity` text COLLATE utf8mb4_unicode_ci,
+  `driving_license_issue_authority` text COLLATE utf8mb4_unicode_ci,
+  `driving_license_photo` text COLLATE utf8mb4_unicode_ci,
+  `ready_for_trip` varchar(55) COLLATE utf8mb4_unicode_ci DEFAULT 'No',
+  `automobile` varchar(55) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `is_car` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT 'No',
+  `is_boda` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT 'No',
+  `is_ambulance` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT 'No',
+  `is_police` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT 'No',
+  `is_delivery` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT 'No',
+  `is_breakdown` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT 'No',
+  `is_firebrugade` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT 'No',
+  `is_car_approved` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT 'No',
+  `is_boda_approved` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT 'No',
+  `is_ambulance_approved` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT 'No',
+  `is_police_approved` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT 'No',
+  `is_delivery_approved` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT 'No',
+  `is_breakdown_approved` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT 'No',
+  `is_firebrugade_approved` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT 'No',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+DROP TABLE IF EXISTS `chat_heads`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `chat_heads` (
+  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL,
+  `product_id` bigint(20) unsigned DEFAULT NULL,
+  `product_name` text COLLATE utf8mb4_unicode_ci,
+  `product_photo` text COLLATE utf8mb4_unicode_ci,
+  `product_owner_id` int(11) DEFAULT NULL,
+  `product_owner_name` text COLLATE utf8mb4_unicode_ci,
+  `product_owner_photo` text COLLATE utf8mb4_unicode_ci,
+  `product_owner_last_seen` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `customer_id` int(11) DEFAULT NULL,
+  `customer_name` text COLLATE utf8mb4_unicode_ci,
+  `customer_photo` text COLLATE utf8mb4_unicode_ci,
+  `customer_last_seen` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `last_message_body` text COLLATE utf8mb4_unicode_ci,
+  `last_message_time` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `last_message_status` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+DROP TABLE IF EXISTS `chat_messages`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `chat_messages` (
+  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL,
+  `chat_head_id` bigint(20) unsigned NOT NULL,
+  `sender_id` bigint(20) unsigned NOT NULL,
+  `receiver_id` bigint(20) unsigned NOT NULL,
+  `sender_name` text COLLATE utf8mb4_unicode_ci,
+  `sender_photo` text COLLATE utf8mb4_unicode_ci,
+  `receiver_name` text COLLATE utf8mb4_unicode_ci,
+  `receiver_photo` text COLLATE utf8mb4_unicode_ci,
+  `body` text COLLATE utf8mb4_unicode_ci,
+  `type` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `status` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `audio` text COLLATE utf8mb4_unicode_ci,
+  `video` text COLLATE utf8mb4_unicode_ci,
+  `document` text COLLATE utf8mb4_unicode_ci,
+  `photo` text COLLATE utf8mb4_unicode_ci,
+  `longitude` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `latitude` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+DROP TABLE IF EXISTS `clients`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `clients` (
+  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL,
+  `company_id` bigint(20) unsigned NOT NULL,
+  `name` text COLLATE utf8mb4_unicode_ci,
+  `short_name` text COLLATE utf8mb4_unicode_ci,
+  `logo` text COLLATE utf8mb4_unicode_ci,
+  `color` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `phone_number` text COLLATE utf8mb4_unicode_ci,
+  `phone_number_2` text COLLATE utf8mb4_unicode_ci,
+  `p_o_box` text COLLATE utf8mb4_unicode_ci,
+  `email` text COLLATE utf8mb4_unicode_ci,
+  `website` text COLLATE utf8mb4_unicode_ci,
+  `address` text COLLATE utf8mb4_unicode_ci,
+  `details` text COLLATE utf8mb4_unicode_ci,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+DROP TABLE IF EXISTS `companies`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `companies` (
+  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL,
+  `name` text COLLATE utf8mb4_unicode_ci,
+  `short_name` text COLLATE utf8mb4_unicode_ci,
+  `details` text COLLATE utf8mb4_unicode_ci,
+  `logo` text COLLATE utf8mb4_unicode_ci,
+  `phone_number` text COLLATE utf8mb4_unicode_ci,
+  `phone_number_2` text COLLATE utf8mb4_unicode_ci,
+  `p_o_box` text COLLATE utf8mb4_unicode_ci,
+  `email` text COLLATE utf8mb4_unicode_ci,
+  `address` text COLLATE utf8mb4_unicode_ci,
+  `website` text COLLATE utf8mb4_unicode_ci,
+  `subdomain` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `color` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `welcome_message` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `type` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `wallet_balance` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `can_send_messages` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `has_valid_lisence` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `administrator_id` int(11) NOT NULL DEFAULT '1',
+  `dp_year` int(11) DEFAULT NULL,
+  `active_year` int(11) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+DROP TABLE IF EXISTS `events`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `events` (
+  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL,
+  `administrator_id` bigint(20) unsigned NOT NULL,
+  `reminder_state` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT 'On',
+  `priority` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT 'Medium',
+  `event_date` datetime DEFAULT NULL,
+  `reminder_date` datetime DEFAULT NULL,
+  `description` text COLLATE utf8mb4_unicode_ci,
+  `remind_beofre_days` int(11) DEFAULT NULL,
+  `users_to_notify` text COLLATE utf8mb4_unicode_ci,
+  `reminders_sent` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT 'No',
+  `outcome` text COLLATE utf8mb4_unicode_ci,
+  `company_id` bigint(20) unsigned NOT NULL,
+  `name` text COLLATE utf8mb4_unicode_ci,
+  `event_conducted` text COLLATE utf8mb4_unicode_ci,
+  `patient_id` bigint(20) unsigned NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+DROP TABLE IF EXISTS `failed_jobs`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `failed_jobs` (
+  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `uuid` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `connection` text COLLATE utf8mb4_unicode_ci NOT NULL,
+  `queue` text COLLATE utf8mb4_unicode_ci NOT NULL,
+  `payload` longtext COLLATE utf8mb4_unicode_ci NOT NULL,
+  `exception` longtext COLLATE utf8mb4_unicode_ci NOT NULL,
+  `failed_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `failed_jobs_uuid_unique` (`uuid`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+DROP TABLE IF EXISTS `financial_years`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `financial_years` (
+  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL,
+  `company_id` bigint(20) unsigned NOT NULL,
+  `name` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `start_date` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `end_date` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `is_active` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+DROP TABLE IF EXISTS `gens`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `gens` (
+  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL,
+  `class_name` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `use_db_table` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `table_name` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `fields` text COLLATE utf8mb4_unicode_ci,
+  `file_id` text COLLATE utf8mb4_unicode_ci,
+  `end_point` varchar(355) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+DROP TABLE IF EXISTS `locations`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `locations` (
+  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL,
+  `name` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `parent` int(11) DEFAULT '0',
+  `photo` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `details` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `order` int(11) DEFAULT '0',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+DROP TABLE IF EXISTS `migrations`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `migrations` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `migration` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `batch` int(11) NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+DROP TABLE IF EXISTS `negotiation_records`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `negotiation_records` (
+  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL,
+  `negotiation_id` int(11) NOT NULL,
+  `customer_id` int(11) NOT NULL,
+  `driver_id` int(11) NOT NULL,
+  `last_negotiator_id` int(11) NOT NULL,
+  `first_negotiator_id` int(11) NOT NULL,
+  `price_accepted` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `price` int(11) NOT NULL,
+  `message_type` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `message_body` text COLLATE utf8mb4_unicode_ci,
+  `image_url` text COLLATE utf8mb4_unicode_ci,
+  `audio_url` text COLLATE utf8mb4_unicode_ci,
+  `is_received` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `is_seen` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `latitude` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `longitude` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+DROP TABLE IF EXISTS `negotiations`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `negotiations` (
+  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL,
+  `customer_id` int(11) DEFAULT NULL,
+  `customer_name` text COLLATE utf8mb4_unicode_ci,
+  `driver_id` int(11) DEFAULT NULL,
+  `driver_name` text COLLATE utf8mb4_unicode_ci,
+  `status` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'Pending',
+  `customer_accepted` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'Pending',
+  `customer_driver` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'Pending',
+  `pickup_lat` text COLLATE utf8mb4_unicode_ci,
+  `pickup_lng` text COLLATE utf8mb4_unicode_ci,
+  `pickup_address` text COLLATE utf8mb4_unicode_ci,
+  `dropoff_lat` text COLLATE utf8mb4_unicode_ci,
+  `dropoff_lng` text COLLATE utf8mb4_unicode_ci,
+  `dropoff_address` text COLLATE utf8mb4_unicode_ci,
+  `records` text COLLATE utf8mb4_unicode_ci,
+  `details` text COLLATE utf8mb4_unicode_ci,
+  `is_active` varchar(55) COLLATE utf8mb4_unicode_ci DEFAULT 'Yes',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+DROP TABLE IF EXISTS `password_resets`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `password_resets` (
+  `email` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `token` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  KEY `password_resets_email_index` (`email`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+DROP TABLE IF EXISTS `patient_records`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `patient_records` (
+  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL,
+  `administrator_id` bigint(20) unsigned NOT NULL,
+  `patient_id` bigint(20) unsigned NOT NULL,
+  `medications_and_allergies` text COLLATE utf8mb4_unicode_ci,
+  `existing_medical_conditions` text COLLATE utf8mb4_unicode_ci,
+  `past_surgeries_or_hospitalizations` text COLLATE utf8mb4_unicode_ci,
+  `history_of_smoking` text COLLATE utf8mb4_unicode_ci,
+  `history_of_alcohol` text COLLATE utf8mb4_unicode_ci,
+  `any_other_relevant_medical_history` text COLLATE utf8mb4_unicode_ci,
+  `chief_complaint` text COLLATE utf8mb4_unicode_ci,
+  `date_of_the_last_dental_visit` text COLLATE utf8mb4_unicode_ci,
+  `previous_dental_treatments` text COLLATE utf8mb4_unicode_ci,
+  `dental_insurance_information` text COLLATE utf8mb4_unicode_ci,
+  `intraoral_and_extraoral_photographs` text COLLATE utf8mb4_unicode_ci,
+  `radiographic_images` text COLLATE utf8mb4_unicode_ci,
+  `periodontal_assessment_gum_health` text COLLATE utf8mb4_unicode_ci,
+  `oral_cancer_screening` text COLLATE utf8mb4_unicode_ci,
+  `tooth_charting_notations` text COLLATE utf8mb4_unicode_ci,
+  `occlusion_bite_assessment` text COLLATE utf8mb4_unicode_ci,
+  `diagnosis_outcome` text COLLATE utf8mb4_unicode_ci,
+  `proposed_dental_treatments` text COLLATE utf8mb4_unicode_ci,
+  `priority_and_urgency_of_treatments` text COLLATE utf8mb4_unicode_ci,
+  `cost_estimates` text COLLATE utf8mb4_unicode_ci,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+DROP TABLE IF EXISTS `patients`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `patients` (
+  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL,
+  `administrator_id` bigint(20) unsigned NOT NULL,
+  `first_name` text COLLATE utf8mb4_unicode_ci,
+  `last_name` text COLLATE utf8mb4_unicode_ci,
+  `gender` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `date_of_birth` date DEFAULT NULL,
+  `phone_number_1` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `phone_number_2` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `email` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `occupation` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `address` text COLLATE utf8mb4_unicode_ci,
+  `how_you_knew_us` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `details` text COLLATE utf8mb4_unicode_ci,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+DROP TABLE IF EXISTS `personal_access_tokens`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `personal_access_tokens` (
+  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `tokenable_type` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `tokenable_id` bigint(20) unsigned NOT NULL,
+  `name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `token` varchar(64) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `abilities` text COLLATE utf8mb4_unicode_ci,
+  `last_used_at` timestamp NULL DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `personal_access_tokens_token_unique` (`token`),
+  KEY `personal_access_tokens_tokenable_type_tokenable_id_index` (`tokenable_type`,`tokenable_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+DROP TABLE IF EXISTS `project_sections`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `project_sections` (
+  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL,
+  `company_id` bigint(20) unsigned NOT NULL,
+  `project_id` bigint(20) unsigned NOT NULL,
+  `name` text COLLATE utf8mb4_unicode_ci,
+  `section_description` text COLLATE utf8mb4_unicode_ci,
+  `progress` int(11) DEFAULT '0',
+  `section_progress` text COLLATE utf8mb4_unicode_ci,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+DROP TABLE IF EXISTS `projects`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `projects` (
+  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL,
+  `company_id` bigint(20) unsigned NOT NULL,
+  `client_id` bigint(20) unsigned NOT NULL,
+  `administrator_id` bigint(20) unsigned NOT NULL,
+  `name` text COLLATE utf8mb4_unicode_ci,
+  `short_name` text COLLATE utf8mb4_unicode_ci,
+  `logo` text COLLATE utf8mb4_unicode_ci,
+  `other_clients` text COLLATE utf8mb4_unicode_ci,
+  `details` text COLLATE utf8mb4_unicode_ci,
+  `progress` int(11) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+DROP TABLE IF EXISTS `route_stages`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `route_stages` (
+  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `name` text COLLATE utf8mb4_unicode_ci COMMENT 'Name of the stage',
+  `latitute` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT '' COMMENT 'Latitute of the stage',
+  `longitude` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT '' COMMENT 'Longitude of the stage',
+  `details` text COLLATE utf8mb4_unicode_ci COMMENT 'Address of the stage',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+DROP TABLE IF EXISTS `tasks`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `tasks` (
+  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL,
+  `company_id` bigint(20) unsigned NOT NULL,
+  `project_id` bigint(20) unsigned NOT NULL,
+  `project_section_id` bigint(20) unsigned NOT NULL,
+  `assigned_to` bigint(20) unsigned NOT NULL,
+  `created_by` bigint(20) unsigned NOT NULL,
+  `manager_id` bigint(20) unsigned NOT NULL,
+  `name` text COLLATE utf8mb4_unicode_ci,
+  `task_description` text COLLATE utf8mb4_unicode_ci,
+  `due_to_date` datetime DEFAULT NULL,
+  `delegate_submission_status` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `delegate_submission_remarks` text COLLATE utf8mb4_unicode_ci,
+  `manager_submission_status` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `manager_submission_remarks` text COLLATE utf8mb4_unicode_ci,
+  `priority` varchar(45) COLLATE utf8mb4_unicode_ci DEFAULT 'Medium',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+DROP TABLE IF EXISTS `treatment_records`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `treatment_records` (
+  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL,
+  `administrator_id` bigint(20) unsigned NOT NULL,
+  `patient_id` bigint(20) unsigned NOT NULL,
+  `procedure` text COLLATE utf8mb4_unicode_ci,
+  `teeth_extracted` text COLLATE utf8mb4_unicode_ci,
+  `details` text COLLATE utf8mb4_unicode_ci,
+  `photos` text COLLATE utf8mb4_unicode_ci,
+  `upper_incisors` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT '-',
+  `upper_canines` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT '-',
+  `upper_premolars` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT '-',
+  `upper_molars` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT '-',
+  `lower_incisors` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT '-',
+  `lower_canines` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT '-',
+  `lower_premolars` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT '-',
+  `lower_molars` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT '-',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+DROP TABLE IF EXISTS `trip_bookings`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `trip_bookings` (
+  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL,
+  `trip_id` bigint(20) unsigned NOT NULL,
+  `customer_id` bigint(20) unsigned NOT NULL,
+  `driver_id` bigint(20) unsigned NOT NULL,
+  `start_stage_id` bigint(20) unsigned NOT NULL,
+  `end_stage_id` bigint(20) unsigned NOT NULL,
+  `status` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'Pending',
+  `payment_status` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'Pending',
+  `start_time` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `end_time` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `slot_count` int(11) DEFAULT '1',
+  `price` int(11) DEFAULT '1',
+  `customer_note` text COLLATE utf8mb4_unicode_ci,
+  `driver_notes` text COLLATE utf8mb4_unicode_ci,
+  `start_stage_text` text COLLATE utf8mb4_unicode_ci,
+  `end_stage_text` text COLLATE utf8mb4_unicode_ci,
+  `trip_text` text COLLATE utf8mb4_unicode_ci,
+  `customer_text` text COLLATE utf8mb4_unicode_ci,
+  `driver_text` text COLLATE utf8mb4_unicode_ci,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+DROP TABLE IF EXISTS `trips`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `trips` (
+  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL,
+  `driver_id` bigint(20) unsigned DEFAULT NULL,
+  `customer_id` bigint(20) unsigned DEFAULT NULL,
+  `start_stage_id` bigint(20) unsigned DEFAULT NULL,
+  `end_stage_id` bigint(20) unsigned DEFAULT NULL,
+  `scheduled_start_time` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'Start time of the trip',
+  `scheduled_end_time` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'End time of the trip',
+  `start_time` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'Start time of the trip',
+  `end_time` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'End time of the trip',
+  `status` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'Status of the trip',
+  `vehicel_reg_number` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'Status of the trip',
+  `slots` int(11) DEFAULT NULL COMMENT 'Number of slots',
+  `details` text COLLATE utf8mb4_unicode_ci COMMENT 'Details of the trip',
+  `car_model` text COLLATE utf8mb4_unicode_ci COMMENT 'Details of the trip',
+  `price` int(11) DEFAULT '0',
+  `start_gps` text COLLATE utf8mb4_unicode_ci,
+  `end_pgs` text COLLATE utf8mb4_unicode_ci,
+  `start_name` text COLLATE utf8mb4_unicode_ci,
+  `end_name` text COLLATE utf8mb4_unicode_ci,
+  `start_address` text COLLATE utf8mb4_unicode_ci,
+  `end_address` text COLLATE utf8mb4_unicode_ci,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+DROP TABLE IF EXISTS `uploads`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `uploads` (
+  `upload_id` int(11) NOT NULL AUTO_INCREMENT,
+  `file_name` text NOT NULL,
+  `original_name` text NOT NULL,
+  `uploaded_by` text NOT NULL,
+  `file_link` text NOT NULL,
+  `file_size` int(11) NOT NULL,
+  `upload_date` varchar(25) NOT NULL,
+  `folder` varchar(100) NOT NULL,
+  PRIMARY KEY (`upload_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+/*!40101 SET character_set_client = @saved_cs_client */;
+DROP TABLE IF EXISTS `user_has_program`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `user_has_program` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `program_award` varchar(250) DEFAULT NULL,
+  `program_name` varchar(250) DEFAULT NULL,
+  `program_year` int(11) DEFAULT NULL,
+  `campus_id` int(11) NOT NULL,
+  `user_id` int(11) NOT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+/*!40101 SET character_set_client = @saved_cs_client */;
+/*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
+
+/*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
+/*!40014 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS */;
+/*!40014 SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS */;
+/*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
+
+INSERT INTO `migrations` VALUES (1,'2014_10_12_000000_create_users_table',1);
+INSERT INTO `migrations` VALUES (2,'2014_10_12_100000_create_password_resets_table',1);
+INSERT INTO `migrations` VALUES (3,'2016_01_04_173148_create_admin_tables',1);
+INSERT INTO `migrations` VALUES (4,'2019_08_19_000000_create_failed_jobs_table',1);
+INSERT INTO `migrations` VALUES (5,'2019_12_14_000001_create_personal_access_tokens_table',1);
+INSERT INTO `migrations` VALUES (6,'2021_11_17_194240_create_courses_table',1);
+INSERT INTO `migrations` VALUES (7,'2021_11_17_202523_create_course_categories_table',1);
+INSERT INTO `migrations` VALUES (8,'2021_11_17_213921_create_course_chapters_table',1);
+INSERT INTO `migrations` VALUES (9,'2021_11_17_215028_create_course_topics_table',1);
+INSERT INTO `migrations` VALUES (10,'2021_11_18_223927_create_traffic_records_table',1);
+INSERT INTO `migrations` VALUES (11,'2021_11_18_225343_create_participants_table',1);
+INSERT INTO `migrations` VALUES (12,'2023_01_01_173551_create_post_categories_table',2);
+INSERT INTO `migrations` VALUES (13,'2023_01_01_190344_create_news_posts_table',3);
+INSERT INTO `migrations` VALUES (14,'2023_01_01_225808_create_eevnts_table',4);
+INSERT INTO `migrations` VALUES (15,'2023_01_01_234118_create_event_bookings_table',5);
+INSERT INTO `migrations` VALUES (16,'2023_01_01_235005_create_event_tickets_table',5);
+INSERT INTO `migrations` VALUES (17,'2023_01_02_013939_create_event_speakers_table',6);
+INSERT INTO `migrations` VALUES (18,'2023_01_02_123806_create_jobs_table',7);
+INSERT INTO `migrations` VALUES (19,'2023_02_24_195813_create_associations_table',8);
+INSERT INTO `migrations` VALUES (20,'2023_02_24_202642_create_groups_table',9);
+INSERT INTO `migrations` VALUES (21,'2023_02_24_211018_create_people_table',10);
+INSERT INTO `migrations` VALUES (22,'2023_02_24_212609_create_disabilities_table',11);
+INSERT INTO `migrations` VALUES (23,'2023_02_24_222515_create_institutions_table',12);
+INSERT INTO `migrations` VALUES (24,'2023_02_24_225942_create_counselling_centres_table',13);
+INSERT INTO `migrations` VALUES (25,'2023_02_26_001531_create_jobs_table',14);
+INSERT INTO `migrations` VALUES (26,'2023_02_26_005329_create_job_applications_table',15);
+INSERT INTO `migrations` VALUES (27,'2023_02_26_005851_create_products_table',16);
+INSERT INTO `migrations` VALUES (28,'2023_02_26_012005_create_product_orders_table',17);
+INSERT INTO `migrations` VALUES (29,'2023_04_13_103959_create_crop_categories_table',18);
+INSERT INTO `migrations` VALUES (30,'2023_04_13_105848_create_crop_protocols_table',19);
+INSERT INTO `migrations` VALUES (31,'2023_04_13_120242_create_gardens_table',20);
+INSERT INTO `migrations` VALUES (32,'2023_04_13_191025_create_garden_activities_table',21);
+INSERT INTO `migrations` VALUES (33,'2023_06_01_210248_create_downloads_table',22);
+INSERT INTO `migrations` VALUES (34,'2023_08_19_200143_create_saccos_table',23);
+INSERT INTO `migrations` VALUES (35,'2023_10_21_162817_create_transactions_table',24);
+INSERT INTO `migrations` VALUES (36,'2023_11_22_004618_create_negotiations_table',25);
+INSERT INTO `migrations` VALUES (37,'2025_09_17_000001_add_service_fields_to_admin_users_table',26);
+INSERT INTO `migrations` VALUES (38,'2025_09_18_100508_add_driver_notes_to_trip_bookings_table',27);
+INSERT INTO `migrations` VALUES (39,'2025_09_18_132728_add_slots_column_to_trips_table',28);

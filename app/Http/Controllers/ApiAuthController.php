@@ -41,6 +41,9 @@ class ApiAuthController extends Controller
     public function me()
     {
         $query = auth('api')->user();
+        if ($query == null) {
+            return $this->error('User not found.');
+        }
         $data = [];
         $admin = Administrator::find($query->id);
         if ($admin != null) {
@@ -59,7 +62,7 @@ class ApiAuthController extends Controller
         if ($u == null) {
             return $this->error('User not found.');
         }
-        
+
         // Enhanced input validation
         if (empty($r->trip_id)) {
             return $this->error('Trip not found.');
@@ -67,13 +70,13 @@ class ApiAuthController extends Controller
         if (empty($r->slot_count)) {
             return $this->error('You have not specified the number of slots.');
         }
-        
+
         // Validate slot count is a positive integer
         $slotCount = (int)$r->slot_count;
         if ($slotCount <= 0) {
             return $this->error('Invalid number of slots. Must be greater than 0.');
         }
-        
+
         $trip = Trip::find($r->trip_id);
         if ($trip == null) {
             return $this->error('Trip not found.');
@@ -81,7 +84,7 @@ class ApiAuthController extends Controller
         if ($trip->status != 'Pending') {
             return $this->error('Trip is not in pending status.');
         }
-        
+
         // Check if user already has a booking for this trip
         $existingBooking = TripBooking::where('trip_id', $trip->id)
             ->where('customer_id', $u->id)
@@ -90,17 +93,17 @@ class ApiAuthController extends Controller
         if ($existingBooking) {
             return $this->error('You already have a booking for this trip.');
         }
-        
+
         // Calculate available slots considering existing bookings
         $bookedSlots = TripBooking::where('trip_id', $trip->id)
             ->where('status', '!=', 'Canceled')
             ->sum('slot_count');
         $availableSlots = $trip->slots - $bookedSlots;
-        
+
         if ($slotCount > $availableSlots) {
             return $this->error("Only {$availableSlots} slots are available for this trip.");
         }
-        
+
         // Validate route stages exist before creating booking
         $start_stage = RouteStage::find($trip->start_stage_id);
         $end_stage = RouteStage::find($trip->end_stage_id);
@@ -110,13 +113,13 @@ class ApiAuthController extends Controller
         if ($end_stage == null) {
             return $this->error("End stage not found.");
         }
-        
+
         // Get driver information
         $driver = Administrator::find($trip->driver_id);
         if ($driver == null) {
             return $this->error("Driver not found.");
         }
-        
+
         $booking = new TripBooking();
         $booking->trip_id = $trip->id;
         $booking->customer_id = $u->id;
@@ -130,7 +133,7 @@ class ApiAuthController extends Controller
         $booking->slot_count = $slotCount;
         $booking->price = $trip->price * $slotCount;
         $booking->customer_note = $r->customer_note ?? '';
-        
+
         // Populate text fields
         $booking->start_stage_text = $start_stage->name;
         $booking->end_stage_text = $end_stage->name;
@@ -141,7 +144,7 @@ class ApiAuthController extends Controller
 
         try {
             $booking->save();
-            
+
             // Send notification to driver (if SMS functionality is available)
             if (method_exists('App\Models\Utils', 'send_message') && !empty($driver->phone_number)) {
                 try {
@@ -154,11 +157,10 @@ class ApiAuthController extends Controller
                     Log::warning('Failed to send SMS notification: ' . $smsError->getMessage());
                 }
             }
-            
         } catch (\Throwable $th) {
             return $this->error('Failed to create booking: ' . $th->getMessage());
         }
-        
+
         return $this->success($booking, "Trip booking created successfully.", 1);
     }
 
@@ -334,38 +336,120 @@ class ApiAuthController extends Controller
         if ($r->automobile == null) {
             return $this->error('You have not specified your automobile.');
         }
+
+        $_automobileType = strtolower(trim($r->automobile));
+        $accepted_automobiles = [
+            'car', 
+            'bodaboda', 
+            'ambulance', 
+            'pickup', 
+            'police', 
+            'firebrugade', 
+            'delivery', 
+            'breakdown'
+        ];
+        if (!in_array($_automobileType, $accepted_automobiles)) {
+            return $this->error('Invalid automobile type. Accepted types are: car, boda, ambulance.');
+        }
+        $automobileFieldValue = null;
+        $automobileFieldKey = null;
+        if ($_automobileType == 'car') {
+            $automobileFieldKey = 'is_car';
+            $automobileFieldValue = 'is_car_approved';
+        } else if ($_automobileType == 'bodaboda' || $_automobileType == 'boda') {
+            $automobileFieldKey = 'is_boda';
+            $automobileFieldValue = 'is_boda_approved';
+        } else if ($_automobileType == 'ambulance') {
+            $automobileFieldKey = 'is_ambulance';
+            $automobileFieldValue = 'is_ambulance_approved';
+        } else if ($_automobileType == 'pickup') {
+            $automobileFieldKey = 'is_pickup';
+            $automobileFieldValue = 'is_pickup_approved';
+        } else if ($_automobileType == 'police') {
+            $automobileFieldKey = 'is_police';
+            $automobileFieldValue = 'is_police_approved';
+        } else if ($_automobileType == 'firebrugade' || $_automobileType == 'firebrigade' || $_automobileType == 'firetruck') {
+            $automobileFieldKey = 'is_firebrugade';
+            $automobileFieldValue = 'is_firebrugade_approved';
+        } else if ($_automobileType == 'delivery') {
+            $automobileFieldKey = 'is_delivery';
+            $automobileFieldValue = 'is_delivery_approved';
+        } else if ($_automobileType == 'breakdown') {
+            $automobileFieldKey = 'is_breakdown';
+            $automobileFieldValue = 'is_breakdown_approved';
+        }
+        if ($automobileFieldKey == null || $automobileFieldValue == null) {
+            return $this->error('Invalid automobile type specified.');
+        }
+
         if ($r->current_address == null) {
             return $this->error('You have not specified your current address.');
         }
 
-        $drivers = Administrator::where('user_type', 'Driver')
-            ->where('status', 1)
-            /* ->where('automobile', $r->automobile) */
+        // Validate GPS coordinates format
+        if (!str_contains($r->current_address, ',')) {
+            return $this->error('Invalid current address format. GPS coordinates required.');
+        }
+
+        // Extract customer coordinates for distance calculation
+        $customerCoords = explode(',', $r->current_address);
+        if (count($customerCoords) != 2) {
+            return $this->error('Invalid GPS coordinates format.');
+        }
+
+
+        $customerLat = (float) trim($customerCoords[0]);
+        $customerLng = (float) trim($customerCoords[1]);
+
+        // Fetch up to 1000 online drivers with valid GPS coordinates
+        $drivers = Administrator::where('status', 1)
             ->where('ready_for_trip', 'Yes')
             ->where('id', '!=', $u->id)
-            ->limit(25)
-            ->orderBy('updated_at', 'desc')
+            ->whereNotNull('current_address') 
+            ->where($automobileFieldKey, 'Yes') 
+            ->where($automobileFieldValue, 'Yes')
+            ->limit(1000) // Increased from 25 to 1000
+            ->orderBy('updated_at', 'desc') // Get most recently active drivers first
             ->get();
 
-
         $data = [];
-        //calculate distance
-        foreach ($drivers as $key => $driver) {
+        $driversWithDistance = [];
 
-            //check if $driver->current_address contains ,
+        // Calculate distance for each driver and prepare data
+        foreach ($drivers as $key => $driver) {
+            // Skip drivers with invalid coordinates
             if (!str_contains($driver->current_address, ',')) {
                 continue;
             }
-            //check if $r->current_address contains ,
-            if (!str_contains($r->current_address, ',')) {
+
+            $driverCoords = explode(',', $driver->current_address);
+            if (count($driverCoords) != 2) {
                 continue;
             }
 
-            $distance = Utils::haversineDistance($r->current_address, $driver->current_address);
-            $driver->distance = $distance;
+            $driverLat = (float) trim($driverCoords[0]);
+            $driverLng = (float) trim($driverCoords[1]);
 
-            $min_speed = 60;
-            $max_speed = 80;
+            // Skip if coordinates are invalid (0,0 or malformed)
+            if ($driverLat == 0 && $driverLng == 0) {
+                continue;
+            }
+
+            // Calculate distance using Haversine formula
+            $distance = Utils::haversineDistance($r->current_address, $driver->current_address);
+
+            // Skip drivers that are too far away (optional: limit to reasonable distance)
+            // You can uncomment this to limit to drivers within 50km
+            // if ($distance > 50) {
+            //     continue;
+            // }
+
+            // Add distance to driver object
+            $driver->distance = round($distance, 2); // Round to 2 decimal places
+
+            // Calculate estimated travel time
+            $min_speed = 60; // km/h
+            $max_speed = 80; // km/h
 
             $min_time = $distance / $max_speed;
             $max_time = $distance / $min_speed;
@@ -387,14 +471,32 @@ class ApiAuthController extends Controller
             } else {
                 $max_word = $max_hours . "hr " . ((int)($max_minutes)) . "min";
             }
+
             $driver->min_time = $min_word;
             $driver->max_time = $max_word;
-            $driver->distance = $distance;
 
-            $data[] = $driver;
+            // Store driver with distance for sorting
+            $driversWithDistance[] = [
+                'driver' => $driver,
+                'distance' => $distance
+            ];
         }
 
-        return $this->success($data, $message = "Trip booking updated successfully.", 1);
+        // Sort drivers by distance (closest first)
+        usort($driversWithDistance, function ($a, $b) {
+            return $a['distance'] <=> $b['distance'];
+        });
+
+        // Extract sorted drivers
+        foreach ($driversWithDistance as $item) {
+            $data[] = $item['driver'];
+        }
+
+        $message = count($data) > 0
+            ? "Found " . count($data) . " drivers nearby, sorted by distance."
+            : "No available drivers found in your area.";
+
+        return $this->success($data, $message, 1);
     }
     public function trips_update(Request $r)
     {
@@ -434,7 +536,7 @@ class ApiAuthController extends Controller
         if ($r->price == null || trim($r->price) == '') {
             return $this->error('Price is required.');
         }
-        
+
         if (!is_numeric($r->price) || $r->price <= 0) {
             return $this->error('Price must be a valid number greater than 0.');
         }
@@ -442,11 +544,11 @@ class ApiAuthController extends Controller
         if ($r->available_slots == null || trim($r->available_slots) == '') {
             return $this->error('Available slots is required.');
         }
-        
+
         if (!is_numeric($r->available_slots) || $r->available_slots <= 0) {
             return $this->error('Available slots must be a valid number greater than 0.');
         }
-        
+
         if ($r->available_slots > 50) {
             return $this->error('Available slots cannot exceed 50.');
         }
@@ -801,7 +903,6 @@ class ApiAuthController extends Controller
 
             Log::info('User registered successfully with token: ' . $user->id);
             return $this->success($responseData, 'Account created and logged in successfully.');
-            
         } catch (\Exception $e) {
             // If JWT generation fails, still return success for account creation
             Log::error('JWT token generation exception for user ' . $user->id . ': ' . $e->getMessage());
@@ -934,7 +1035,7 @@ class ApiAuthController extends Controller
             $bookedSlots = TripBooking::where('trip_id', $trip->id)
                 ->whereIn('status', ['Pending', 'Reserved'])
                 ->sum('slot_count');
-            
+
             if ($r->slots < $bookedSlots) {
                 return $this->error("Cannot reduce slots below {$bookedSlots} (currently booked).");
             }
@@ -1082,17 +1183,17 @@ class ApiAuthController extends Controller
         // Add booking statistics to each trip
         foreach ($trips as $trip) {
             $bookings = TripBooking::where('trip_id', $trip->id)->get();
-            
+
             $trip->total_bookings = $bookings->count();
             $trip->pending_bookings = $bookings->where('status', 'Pending')->count();
             $trip->reserved_bookings = $bookings->where('status', 'Reserved')->count();
             $trip->completed_bookings = $bookings->where('status', 'Completed')->count();
             $trip->canceled_bookings = $bookings->where('status', 'Canceled')->count();
-            
+
             $trip->booked_slots = $bookings->whereIn('status', ['Pending', 'Reserved'])
                 ->sum('slot_count');
             $trip->available_slots = $trip->slots - $trip->booked_slots;
-            
+
             $trip->total_revenue = $bookings->whereIn('status', ['Reserved', 'Completed'])
                 ->sum('price');
         }

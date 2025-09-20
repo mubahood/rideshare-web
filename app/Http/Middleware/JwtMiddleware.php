@@ -66,8 +66,14 @@ class JwtMiddleware extends BaseMiddleware
                 $Authorization = $headers['Authorizations'];
             } else if (isset($headers['authorizations']) && $headers['authorizations'] != "") {
                 $Authorization = $headers['authorizations'];
+            } else if (isset($headers['token']) && $headers['token'] != "") {
+                $Authorization = $headers['token'];
+            } else if (isset($headers['Token']) && $headers['Token'] != "") {
+                $Authorization = $headers['Token'];
             } else if (isset($headers['Tok']) && $headers['Tok'] != "") {
                 $Authorization = $headers['Tok'];
+            } else if (isset($headers['tok']) && $headers['tok'] != "") {
+                $Authorization = $headers['tok'];
             }
 
 
@@ -75,6 +81,12 @@ class JwtMiddleware extends BaseMiddleware
             $request->headers->set('authorization', $Authorization); // set header in request
 
             $user = FacadesJWTAuth::parseToken()->authenticate();
+            
+            // Set the authenticated user in the auth guard
+            if ($user) {
+                auth('api')->setUser($user);
+            }
+            
         } catch (Exception $e) {
             if ($e instanceof \Tymon\JWTAuth\Exceptions\TokenInvalidException) {
                 return response()->json(['status' => 'Token is Invalid']);
