@@ -602,7 +602,7 @@ class ApiAuthController extends Controller
         $trip->end_time = null;
         $trip->status = 'Pending';
         $trip->vehicel_reg_number = $r->car_reg_number;
-        $trip->slots = (int)$r->available_slots; // Ensure it's stored as integer
+        $trip->slots = (int)$r->slots; // Ensure it's stored as integer
         $trip->details = $r->details;
         $trip->car_model = $r->car_model;
         $trip->price = $r->price;
