@@ -541,15 +541,15 @@ class ApiAuthController extends Controller
             return $this->error('Price must be a valid number greater than 0.');
         }
 
-        if ($r->available_slots == null || trim($r->available_slots) == '') {
+        if ($r->slots == null || trim($r->slots) == '') {
             return $this->error('Available slots is required.');
         }
 
-        if (!is_numeric($r->available_slots) || $r->available_slots <= 0) {
+        if (!is_numeric($r->slots) || $r->slots <= 0) {
             return $this->error('Available slots must be a valid number greater than 0.');
         }
 
-        if ($r->available_slots > 50) {
+        if ($r->slots > 50) {
             return $this->error('Available slots cannot exceed 50.');
         }
 
