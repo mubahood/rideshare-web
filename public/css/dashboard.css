@@ -1,0 +1,360 @@
+/* Rideshare Dashboard Custom Styles */
+:root {
+    --brand-black: #040404;
+    --brand-orange: #FF9900;
+    --brand-yellow: #ECC60F;
+    --success-green: #4CAF50;
+    --info-blue: #2196F3;
+    --warning-orange: #FF5722;
+    --purple: #9C27B0;
+    --indigo: #3F51B5;
+}
+
+/* Global Dashboard Styles */
+.content-wrapper {
+    background: #f8f9fa;
+}
+
+/* Box Styles */
+.box {
+    border: none !important;
+    border-radius: 0 !important;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1) !important;
+    margin-bottom: 20px;
+}
+
+.box-header {
+    border-radius: 0 !important;
+    padding: 15px 20px;
+}
+
+.box-header.with-border {
+    border-bottom: none !important;
+}
+
+.box-title {
+    font-size: 1.1rem;
+    font-weight: 600;
+}
+
+/* Small Box (Metric Cards) */
+.small-box {
+    border: none !important;
+    border-radius: 0 !important;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15) !important;
+    transition: all 0.3s ease;
+    overflow: hidden;
+    position: relative;
+}
+
+.small-box:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 25px rgba(0,0,0,0.2) !important;
+}
+
+.small-box .inner {
+    padding: 20px;
+}
+
+.small-box .inner h3 {
+    font-size: 2.5rem;
+    font-weight: 700;
+    margin: 0 0 5px 0;
+    text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
+}
+
+.small-box .inner p {
+    font-size: 1rem;
+    font-weight: 500;
+    margin: 0;
+    opacity: 0.9;
+}
+
+.small-box .icon {
+    position: absolute;
+    top: 15px;
+    right: 20px;
+    font-size: 3.5rem;
+    opacity: 0.2;
+}
+
+.small-box-footer {
+    position: relative;
+    text-align: center;
+    padding: 8px 0;
+    color: white;
+    font-size: 0.9rem;
+    font-weight: 500;
+}
+
+/* Chart Containers */
+.chart-container {
+    position: relative;
+    height: 300px;
+    margin: 20px 0;
+}
+
+/* Info Box Styles */
+.info-box {
+    display: flex;
+    align-items: center;
+    padding: 15px 20px;
+    margin-bottom: 15px;
+    border: none !important;
+    border-radius: 0 !important;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    transition: all 0.3s ease;
+}
+
+.info-box:hover {
+    transform: translateX(8px);
+    box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+}
+
+.info-box-icon {
+    width: 60px;
+    height: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    border-radius: 50% !important;
+    margin-right: 15px;
+}
+
+.info-box-content {
+    flex: 1;
+}
+
+.info-box-text {
+    display: block;
+    font-size: 0.95rem;
+    font-weight: 500;
+    margin-bottom: 3px;
+}
+
+.info-box-number {
+    display: block;
+    font-size: 1.8rem;
+    font-weight: 700;
+    text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
+}
+
+/* Table Styles */
+.table {
+    margin-bottom: 0;
+}
+
+.table thead th {
+    background: #f8f9fa !important;
+    border-bottom: 2px solid #dee2e6;
+    font-weight: 600;
+    color: #495057;
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.table tbody tr {
+    transition: background-color 0.2s ease;
+}
+
+.table tbody tr:hover {
+    background-color: rgba(255, 153, 0, 0.05) !important;
+}
+
+.table tbody td {
+    vertical-align: middle;
+    font-size: 0.9rem;
+}
+
+/* Badge Styles */
+.badge {
+    font-size: 0.8rem;
+    font-weight: 500;
+    padding: 6px 12px;
+    border-radius: 20px;
+}
+
+/* Activity Items */
+.activity-item {
+    padding: 15px 20px;
+    border-bottom: 1px solid #f0f0f0;
+    display: flex;
+    align-items: center;
+    transition: background-color 0.2s ease;
+}
+
+.activity-item:hover {
+    background-color: #f8f9fa;
+}
+
+.activity-item:last-child {
+    border-bottom: none;
+}
+
+.activity-icon {
+    width: 45px;
+    height: 45px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #f8f9fa;
+    border-radius: 50%;
+    margin-right: 15px;
+    border: 2px solid #e9ecef;
+}
+
+.activity-content {
+    flex: 1;
+}
+
+.activity-message {
+    font-weight: 500;
+    color: #333;
+    margin-bottom: 4px;
+    font-size: 0.95rem;
+}
+
+.activity-time {
+    font-size: 0.85rem;
+    color: #666;
+}
+
+/* Brand Color Classes */
+.bg-brand-black {
+    background: linear-gradient(135deg, var(--brand-black) 0%, #333 100%) !important;
+}
+
+.bg-brand-orange {
+    background: linear-gradient(135deg, var(--brand-orange) 0%, #e6880a 100%) !important;
+}
+
+.bg-brand-yellow {
+    background: linear-gradient(135deg, var(--brand-yellow) 0%, #d4b00e 100%) !important;
+}
+
+.bg-success {
+    background: linear-gradient(135deg, var(--success-green) 0%, #45a049 100%) !important;
+}
+
+.bg-info {
+    background: linear-gradient(135deg, var(--info-blue) 0%, #1976D2 100%) !important;
+}
+
+.bg-warning {
+    background: linear-gradient(135deg, var(--warning-orange) 0%, #E64A19 100%) !important;
+}
+
+.bg-purple {
+    background: linear-gradient(135deg, var(--purple) 0%, #7B1FA2 100%) !important;
+}
+
+.bg-indigo {
+    background: linear-gradient(135deg, var(--indigo) 0%, #303F9F 100%) !important;
+}
+
+/* Empty State Styles */
+.empty-state {
+    padding: 40px 20px;
+    text-align: center;
+    color: #666;
+}
+
+.empty-state i {
+    font-size: 4rem;
+    margin-bottom: 20px;
+    opacity: 0.3;
+    color: #ccc;
+}
+
+.empty-state p {
+    font-size: 1.1rem;
+    margin: 0;
+}
+
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+    .small-box .inner h3 {
+        font-size: 2rem;
+    }
+    
+    .small-box .icon {
+        font-size: 2.5rem;
+        top: 10px;
+        right: 15px;
+    }
+    
+    .info-box {
+        padding: 12px 15px;
+    }
+    
+    .info-box-icon {
+        width: 50px;
+        height: 50px;
+        font-size: 1.3rem;
+    }
+    
+    .info-box-number {
+        font-size: 1.5rem;
+    }
+}
+
+/* Animation for page load */
+.content-wrapper {
+    animation: fadeInUp 0.5s ease-out;
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Custom scrollbar for activity feed */
+.box-body::-webkit-scrollbar {
+    width: 6px;
+}
+
+.box-body::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 10px;
+}
+
+.box-body::-webkit-scrollbar-thumb {
+    background: var(--brand-orange);
+    border-radius: 10px;
+}
+
+.box-body::-webkit-scrollbar-thumb:hover {
+    background: #e6880a;
+}
+
+/* Loading animation */
+.loading {
+    position: relative;
+}
+
+.loading::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 20px;
+    height: 20px;
+    margin: -10px 0 0 -10px;
+    border: 2px solid var(--brand-orange);
+    border-top: 2px solid transparent;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}

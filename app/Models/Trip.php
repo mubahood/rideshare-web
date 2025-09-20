@@ -118,6 +118,34 @@ class Trip extends Model
         'driver_contact',
         'other_info',
     ];
+
+    /**
+     * Relationships
+     */
+    public function driver()
+    {
+        return $this->belongsTo(Administrator::class, 'driver_id');
+    }
+
+    public function customer()
+    {
+        return $this->belongsTo(Administrator::class, 'customer_id');
+    }
+
+    public function startStage()
+    {
+        return $this->belongsTo(RouteStage::class, 'start_stage_id');
+    }
+
+    public function endStage()
+    {
+        return $this->belongsTo(RouteStage::class, 'end_stage_id');
+    }
+
+    public function bookings()
+    {
+        return $this->hasMany(TripBooking::class);
+    }
     /* 
       String price = "";
   String driver_contact = "";

@@ -27,6 +27,9 @@ use App\Models\Trip;
 use App\Models\User;
 use Carbon\Carbon;
 
+// Add custom dashboard CSS
+Admin::css('/css/dashboard.css');
+
 //Utils::send_message('+256783204665','Hello from the other side');
 
 //generate a users
