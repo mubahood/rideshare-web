@@ -573,7 +573,7 @@ class ApiAuthController extends Controller
             return $this->error('End GPS coordinates are required.');
         }
 
-        if ($r->car_reg_number == null || trim($r->car_reg_number) == '') {
+        if ($r->vehicel_reg_number == null || trim($r->vehicel_reg_number) == '') {
             return $this->error('Vehicle registration number is required.');
         }
 
@@ -601,7 +601,7 @@ class ApiAuthController extends Controller
         $trip->start_time = null;
         $trip->end_time = null;
         $trip->status = 'Pending';
-        $trip->vehicel_reg_number = $r->car_reg_number;
+        $trip->vehicel_reg_number = $r->vehicel_reg_number;
         $trip->slots = (int)$r->slots; // Ensure it's stored as integer
         $trip->details = $r->details;
         $trip->car_model = $r->car_model;
