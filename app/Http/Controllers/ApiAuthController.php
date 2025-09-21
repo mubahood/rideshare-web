@@ -526,8 +526,11 @@ class ApiAuthController extends Controller
     public function trips_create(Request $r)
     {
         $query = auth('api')->user();
+        if ($query == null) {
+            return $this->error('User not found.');
+        }
         $data = [];
-        $u = Administrator::find($query->id);
+        $u = User::find($query->id);
         if ($u == null) {
             return $this->error('User not found.');
         }
@@ -619,6 +622,7 @@ class ApiAuthController extends Controller
         $trip->end_name = $r->end_name;
         $trip->start_address = $r->start_address;
         $trip->end_address = $r->end_address;
+        $trip->driver_id = $u->id;
 
 
         try {

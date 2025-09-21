@@ -52,8 +52,6 @@ class Trip extends Model
     protected static function boot()
     {
         parent::boot();
-        static::creating(function ($model) {
-        });
 
 
         static::updated(function ($model) {
