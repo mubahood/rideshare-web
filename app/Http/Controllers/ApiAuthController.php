@@ -580,6 +580,13 @@ class ApiAuthController extends Controller
         if ($r->car_model == null || trim($r->car_model) == '') {
             return $this->error('Car model is required.');
         }
+        if ($r->end_address == null || trim($r->end_address) == '') {
+            return $this->error('End address is required.');
+        }
+        //start_address
+        if ($r->details == null || trim($r->details) == '') {
+            return $this->error('Trip details are required.');
+        }
 
         // Validate date format
         try {
@@ -610,6 +617,8 @@ class ApiAuthController extends Controller
         $trip->end_pgs = $r->end_pgs;
         $trip->start_name = $r->start_name;
         $trip->end_name = $r->end_name;
+        $trip->start_address = $r->start_address;
+        $trip->end_address = $r->end_address;
 
 
         try {
