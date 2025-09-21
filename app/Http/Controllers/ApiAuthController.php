@@ -135,8 +135,8 @@ class ApiAuthController extends Controller
         $booking->customer_note = $r->customer_note ?? '';
 
         // Populate text fields
-        $booking->start_stage_text = $start_stage->name;
-        $booking->end_stage_text = $end_stage->name;
+        $booking->start_stage_text = $trip->start_name;
+        $booking->end_stage_text = $trip->end_name;
         $booking->customer_text = $u->name;
         $booking->driver_text = $driver->name;
         $booking->trip_text = $trip->details ?? $trip->name ?? 'Trip';
