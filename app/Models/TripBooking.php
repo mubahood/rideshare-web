@@ -16,7 +16,7 @@ class TripBooking extends Model
         parent::boot();
         static::creating(function ($model) {
             //can't create a trip while having another trip in pending status
-            return self::prepare($model); 
+            return self::prepare($model);
             $pending_trips = TripBooking::where([
                 'status' => 'Pending',
                 'customer_id' => $model->customer_id
@@ -57,15 +57,10 @@ class TripBooking extends Model
             $model->customer_text = $customer->name;
         }
         //set the start stage text
-        $start_stage = RouteStage::find($model->start_stage_id);
-        if ($start_stage) {
-            $model->start_stage_text = $start_stage->name;
-        }
+        $model->start_stage_text = $trip->start_name;
         //set the end stage text
-        $end_stage = RouteStage::find($model->end_stage_id);
-        if ($end_stage) {
-            $model->end_stage_text = $end_stage->name;
-        }
+        $model->end_stage_text = $trip->end_name;
+        
 
         //scheduled_start_time
         try {
